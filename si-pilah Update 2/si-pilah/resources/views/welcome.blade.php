@@ -32,19 +32,15 @@
 
             <div class="flex items-center space-x-4">
                 @auth
-                    {{-- Tampilan Avatar saat user SUDAH login --}}
                     <a href="/register" class="group relative inline-block px-8 py-4 text-lg font-bold text-white rounded-full overflow-hidden bg-gradient-to-r from-[#1b5e20] to-green-500 shadow-xl hover:scale-105 transition-all duration-300">
-                        {{-- Efek cahaya mengkilap --}}
                         <span class="absolute inset-0 w-full h-full -ml-10 bg-gradient-to-r from-transparent via-white/30 to-transparent skew-x-12 -translate-x-[150%] group-hover:translate-x-[250%] transition-transform duration-700 ease-out"></span>
                         
                         <span class="relative z-10 flex items-center gap-2">
                             Mulai Pilah Sekarang
-                            {{-- Ikon panah yang bergerak maju --}}
                             <svg class="w-5 h-5 transform group-hover:translate-x-1.5 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
                         </span>
                     </a>
                     
-                    {{-- Lingkaran Avatar dengan inisial huruf pertama user --}}
                     <div class="rounded-full bg-gradient-to-tr from-green-400 to-[#1b5e20] p-[2.5px] hover:scale-105 transition-transform duration-300 shadow-sm">
                         <a href="{{ route('profile.edit') }}" title="Pengaturan Profil" 
                         class="h-full w-full flex items-center justify-center rounded-full bg-white text-[#1b5e20] font-extrabold text-lg px-3 py-1">

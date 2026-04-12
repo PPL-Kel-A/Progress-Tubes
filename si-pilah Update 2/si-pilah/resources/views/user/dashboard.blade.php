@@ -44,7 +44,6 @@
         
         <div class="bg-sipilah-green rounded-2xl p-8 text-white mb-10 shadow-lg relative overflow-hidden">
             <div class="relative z-10 w-full md:w-2/3">
-                {{-- Teks sapaan diletakkan di sini --}}
                 <p class="text-green-200 text-lg font-semibold mb-1 tracking-wide">
                     Halo, {{ Auth::user()->name }}! 👋
                 </p>
