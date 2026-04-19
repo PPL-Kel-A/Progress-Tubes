@@ -25,8 +25,10 @@
             </div>
 
             <a href="#" class="hover:text-green-600 transition">Reward</a>
-            <a href="{{ route('about') }}" class="hover:text-green-600 transition">About</a>
-            <a href="{{ route('contact') }}" class="hover:text-green-600 transition">Contact</a>
+            <a href="#" class="hover:text-green-600 transition">About</a>
+            <a href="#" class="hover:text-green-600 transition">Contact</a>
+            <!-- <a href="{{ route('about') }}" class="hover:text-green-600 transition">About</a>
+            <a href="{{ route('contact') }}" class="hover:text-green-600 transition">Contact</a> -->
         </div>
 
         <div class="flex items-center space-x-3">
