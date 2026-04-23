@@ -70,7 +70,6 @@
             </div>
         </div>
 
-        {{-- Riwayat Setoran Sampah --}}
         <div class="flex items-center justify-between mb-6">
             <h2 class="text-xl font-bold text-gray-700">Riwayat Setoran Terakhir</h2>
             <a href="{{ route('waste.select') }}" class="text-sm font-semibold text-sipilah-green hover:underline">+ Setor Baru</a>
