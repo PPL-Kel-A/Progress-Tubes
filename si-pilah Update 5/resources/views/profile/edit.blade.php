@@ -28,7 +28,7 @@
 
                     <!-- Tips -->
                     <p class="text-sm bg-white/20 px-4 py-2 rounded-xl inline-block w-fit backdrop-blur-md">
-                        ♻️ Tips: Pisahkan sampah organik & anorganik untuk mempermudah daur ulang
+                        Tips: Pisahkan sampah organik & anorganik untuk mempermudah daur ulang
                     </p>
 
                 </div>
