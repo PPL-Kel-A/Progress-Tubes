@@ -48,7 +48,7 @@
                 </p>
 
                 <h1 class="text-3xl font-bold leading-tight mb-3">
-                    Pantau status laporanmu di sini 📋
+                    Pantau status laporanmu di sini!
                 </h1>
 
                 <p class="text-green-100 text-base mb-6">
