@@ -10,6 +10,8 @@ class Education extends Model
 
     protected $fillable = [
         'title',
-        'file_pdf'
+        'file_pdf',
+        'cover',
+        
     ];
 }

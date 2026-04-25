@@ -7,6 +7,7 @@ use App\Models\Announcement;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\WasteController;
 use App\Http\Controllers\Admin\AdminDashboardController;
+use App\Http\Controllers\EducationController;
 
 
 
@@ -94,5 +95,7 @@ Route::middleware(['auth', 'is_admin'])->prefix('admin')->name('admin.')->group(
     Route::post('/educations', [AdminDashboardController::class, 'storeEducation'])->name('educations.store');
     Route::delete('/educations/{education}', [AdminDashboardController::class, 'deleteEducation'])->name('educations.delete');
 });
+
+Route::get('/education', [EducationController::class, 'index'])->name('education.index');
 
 require __DIR__.'/auth.php';

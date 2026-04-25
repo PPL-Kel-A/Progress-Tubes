@@ -249,33 +249,55 @@ class AdminDashboardController extends Controller
 
     public function storeEducation(Request $request)
     {
+        // ===== VALIDASI =====
         $request->validate([
-            'title' => 'required|string|max:255',
-            'file_pdf' => 'required|mimes:pdf|max:2048',
+            'title'     => 'required|string|max:255',
+            'cover'     => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'file_pdf'  => 'required|mimes:pdf|max:2048',
         ]);
 
-        // upload file PDF
-        $file = $request->file('file_pdf');
-        $filename = time() . '_' . $file->getClientOriginalName();
-        $file->move(public_path('pdf'), $filename);
+        $coverName = null;
+        $pdfName   = null;
 
+        // ===== UPLOAD COVER =====
+        if ($request->hasFile('cover')) {
+            $cover = $request->file('cover');
+            $coverName = time() . '_cover_' . $cover->getClientOriginalName();
+            $cover->move(public_path('cover'), $coverName);
+        }
+
+        // ===== UPLOAD PDF =====
+        if ($request->hasFile('file_pdf')) {
+            $file = $request->file('file_pdf');
+            $pdfName = time() . '_pdf_' . $file->getClientOriginalName();
+            $file->move(public_path('pdf'), $pdfName);
+        }
+
+        // ===== SIMPAN =====
         Education::create([
-            'title' => $request->title,
-            'file_pdf' => $filename,
+            'title'     => $request->title,
+            'cover'     => $coverName,
+            'file_pdf'  => $pdfName,
         ]);
 
-        return back()->with('success', 'Artikel PDF berhasil ditambahkan.');
+        return back()->with('success', 'Artikel berhasil ditambahkan!');
     }
 
     public function deleteEducation(Education $education)
     {
-        // hapus file PDF juga dari folder
+        // ===== HAPUS PDF =====
         if ($education->file_pdf && file_exists(public_path('pdf/' . $education->file_pdf))) {
             unlink(public_path('pdf/' . $education->file_pdf));
         }
 
+        // ===== HAPUS COVER =====
+        if ($education->cover && file_exists(public_path('cover/' . $education->cover))) {
+            unlink(public_path('cover/' . $education->cover));
+        }
+
         $education->delete();
 
-        return back()->with('success', 'Artikel berhasil dihapus.');
+        return back()->with('success', 'Artikel berhasil dihapus!');
     }
 }
+    
