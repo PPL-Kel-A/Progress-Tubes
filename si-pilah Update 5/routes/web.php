@@ -88,6 +88,11 @@ Route::middleware(['auth', 'is_admin'])->prefix('admin')->name('admin.')->group(
     Route::post('/announcements', [AdminDashboardController::class, 'storeAnnouncement'])->name('announcements.store');
     Route::put('/announcements/{announcement}', [AdminDashboardController::class, 'updateAnnouncement'])->name('announcements.update');
     Route::delete('/announcements/{announcement}', [AdminDashboardController::class, 'deleteAnnouncement'])->name('announcements.delete');
+
+    // Educations
+    Route::get('/educations', [AdminDashboardController::class, 'educations'])->name('educations');
+    Route::post('/educations', [AdminDashboardController::class, 'storeEducation'])->name('educations.store');
+    Route::delete('/educations/{education}', [AdminDashboardController::class, 'deleteEducation'])->name('educations.delete');
 });
 
 require __DIR__.'/auth.php';

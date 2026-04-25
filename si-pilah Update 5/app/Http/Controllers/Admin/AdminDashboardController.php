@@ -13,6 +13,7 @@ use App\Models\Report;
 use App\Models\Reward;
 use App\Models\Schedule;
 use App\Models\Announcement;
+use App\Models\Education;
 
 class AdminDashboardController extends Controller
 {
@@ -234,5 +235,47 @@ class AdminDashboardController extends Controller
     {
         $announcement->delete();
         return back()->with('success', 'Pengumuman berhasil dihapus.');
+    }
+
+        
+
+    // ==================== EDUCATIONS ====================
+
+    public function educations()
+    {
+        $educations = Education::latest()->paginate(15);
+        return view('admin.educations', compact('educations'));
+    }
+
+    public function storeEducation(Request $request)
+    {
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'file_pdf' => 'required|mimes:pdf|max:2048',
+        ]);
+
+        // upload file PDF
+        $file = $request->file('file_pdf');
+        $filename = time() . '_' . $file->getClientOriginalName();
+        $file->move(public_path('pdf'), $filename);
+
+        Education::create([
+            'title' => $request->title,
+            'file_pdf' => $filename,
+        ]);
+
+        return back()->with('success', 'Artikel PDF berhasil ditambahkan.');
+    }
+
+    public function deleteEducation(Education $education)
+    {
+        // hapus file PDF juga dari folder
+        if ($education->file_pdf && file_exists(public_path('pdf/' . $education->file_pdf))) {
+            unlink(public_path('pdf/' . $education->file_pdf));
+        }
+
+        $education->delete();
+
+        return back()->with('success', 'Artikel berhasil dihapus.');
     }
 }

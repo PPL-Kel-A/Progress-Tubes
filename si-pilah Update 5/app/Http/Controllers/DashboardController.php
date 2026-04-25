@@ -11,6 +11,7 @@ use App\Models\Reward;
 use App\Models\Report;
 use App\Models\Schedule;
 use App\Models\Announcement;
+use App\Models\Education;
 
 class DashboardController extends Controller
 {
