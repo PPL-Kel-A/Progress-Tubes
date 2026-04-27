@@ -103,6 +103,12 @@
                         <span class="text-lg w-6 text-center">📢</span>
                         <span>Pengumuman</span>
                     </a>
+
+                    <a href="{{ route('admin.educations') }}" 
+                       class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 {{ request()->routeIs('admin.educations') ? 'bg-white/20 text-white font-semibold shadow-sm' : 'text-green-100/70 hover:bg-white/10' }}">
+                        <span class="text-lg w-6 text-center">📚</span>
+                        <span>Edukasi</span>
+                    </a>
                 </div>
             </nav>
 
@@ -166,6 +172,7 @@
                     <a href="{{ route('admin.rewards') }}" class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 {{ request()->routeIs('admin.rewards') ? 'bg-white/20 text-white font-semibold' : 'text-green-100/70 hover:bg-white/10' }}"><span class="text-lg w-6 text-center">🎁</span><span>Reward</span></a>
                     <a href="{{ route('admin.schedules') }}" class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 {{ request()->routeIs('admin.schedules') ? 'bg-white/20 text-white font-semibold' : 'text-green-100/70 hover:bg-white/10' }}"><span class="text-lg w-6 text-center">📅</span><span>Jadwal</span></a>
                     <a href="{{ route('admin.announcements') }}" class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 {{ request()->routeIs('admin.announcements') ? 'bg-white/20 text-white font-semibold' : 'text-green-100/70 hover:bg-white/10' }}"><span class="text-lg w-6 text-center">📢</span><span>Pengumuman</span></a>
+                    <a href="{{ route('admin.educations') }}" class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 {{ request()->routeIs('admin.educations') ? 'bg-white/20 text-white font-semibold' : 'text-green-100/70 hover:bg-white/10' }}"><span class="text-lg w-6 text-center">📚</span><span>Edukasi</span></a>
                 </div>
             </nav>
         </aside>

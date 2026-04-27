@@ -3,14 +3,12 @@
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DashboardController;
-use App\Models\Announcement;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\WasteController;
 use App\Http\Controllers\Admin\AdminDashboardController;
+use App\Http\Controllers\EducationController;
 
-
-
-
+// ==================== HOME ====================
 Route::get('/', function () {
     try {
         $beritaTerkini = \App\Models\Announcement::latest()->take(3)->get();
@@ -21,41 +19,52 @@ Route::get('/', function () {
     return view('welcome', compact('beritaTerkini'));
 });
 
+// ==================== DASHBOARD ====================
 Route::get('/dashboard', [DashboardController::class, 'index'])
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
 
+// ==================== USER ====================
 Route::middleware('auth')->group(function () {
+
+    // Profile
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-    
-//Waste 
-    Route::get('/waste/select', function () {return view('waste.select');})->name('waste.select');
+
+    // Waste
+    Route::get('/waste/select', fn () => view('waste.select'))->name('waste.select');
     Route::get('/waste/form', [WasteController::class, 'create']);
     Route::post('/waste/preview', [WasteController::class, 'preview']);
     Route::post('/waste/store', [WasteController::class, 'store']);
-    Route::get('/waste/success', [WasteController::class, 'success']);   
-    
-//Guidelines & Rules 
-    Route::get('/waste/guidelines', function () {return view('waste.guidelines');})->name('waste.guidelines');
-    Route::get('/process-flow', function () {return view('waste.process-flow');})->name('process.flow');
-    Route::get('/waste/process', function () {return view('waste.process');})->name('waste.process');
-    Route::get('/panduan-setor', function () {return view('waste.panduan-setor');})->name('panduan.setor');
-    Route::get('/rules', function () {return view('waste.rules');})->name('rules');
+    Route::get('/waste/success', [WasteController::class, 'success']);
 
-//Reports
+    // Guidelines
+    Route::get('/waste/guidelines', fn () => view('waste.guidelines'))->name('waste.guidelines');
+    Route::get('/process-flow', fn () => view('waste.process-flow'))->name('process.flow');
+    Route::get('/waste/process', fn () => view('waste.process'))->name('waste.process');
+    Route::get('/panduan-setor', fn () => view('waste.panduan-setor'))->name('panduan.setor');
+    Route::get('/rules', fn () => view('waste.rules'))->name('rules');
+
+    // Reports
     Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
     Route::get('/reports/create', [ReportController::class, 'create'])->name('reports.create');
     Route::post('/reports', [ReportController::class, 'store'])->name('reports.store');
 });
 
-// ==================== PUBLIC PAGES ====================
-Route::get('/about', function () { return view('pages.about'); })->name('about');
-Route::get('/contact', function () { return view('pages.contact'); })->name('contact');
+// ==================== PUBLIC ====================
+Route::get('/about', fn () => view('pages.about'))->name('about');
+Route::get('/contact', fn () => view('pages.contact'))->name('contact');
 
-// ==================== ADMIN ROUTES ====================
-Route::middleware(['auth', 'is_admin'])->prefix('admin')->name('admin.')->group(function () {
+// ==================== EDUCATION USER ====================
+Route::get('/education', [EducationController::class, 'index'])->name('education.index');
+
+// ==================== ADMIN ====================
+Route::middleware(['auth', 'is_admin'])
+    ->prefix('admin')
+    ->name('admin.')
+    ->group(function () {
+
     // Dashboard
     Route::get('/', [AdminDashboardController::class, 'index'])->name('dashboard');
 
@@ -88,6 +97,24 @@ Route::middleware(['auth', 'is_admin'])->prefix('admin')->name('admin.')->group(
     Route::post('/announcements', [AdminDashboardController::class, 'storeAnnouncement'])->name('announcements.store');
     Route::put('/announcements/{announcement}', [AdminDashboardController::class, 'updateAnnouncement'])->name('announcements.update');
     Route::delete('/announcements/{announcement}', [AdminDashboardController::class, 'deleteAnnouncement'])->name('announcements.delete');
+
+    // ==================== EDUCATIONS (FULL CRUD) ====================
+
+    // LIST
+    Route::get('/educations', [AdminDashboardController::class, 'educations'])->name('educations');
+
+    // CREATE
+    Route::post('/educations', [AdminDashboardController::class, 'storeEducation'])->name('educations.store');
+
+    // DELETE
+    Route::delete('/educations/{education}', [AdminDashboardController::class, 'deleteEducation'])->name('educations.delete');
+
+    // EDIT PAGE
+    Route::get('/educations/{education}/edit', [AdminDashboardController::class, 'edit'])->name('educations.edit');
+
+    // UPDATE
+    Route::put('/educations/{education}', [AdminDashboardController::class, 'update'])->name('educations.update');
+
 });
 
 require __DIR__.'/auth.php';

@@ -8,8 +8,7 @@
         
         <div class="hidden md:flex space-x-8 font-bold text-sipilah-green uppercase text-sm tracking-wider items-center">
             <a href="/" class="hover:text-green-600 transition">Home</a>
-            <a href="#" class="hover:text-green-600 transition">Education</a>
-            
+            <a href="{{ route('education.index') }}" class="hover:text-green-600 transition">Education</a>
             {{-- Waste Banks Dropdown --}}
             <div class="flex items-center space-x-1 relative" x-data="{ open: false }">
                 <a href="#" class="hover:text-green-600 transition">WASTE BANKS</a>
