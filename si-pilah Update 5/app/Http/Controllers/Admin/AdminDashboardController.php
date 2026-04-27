@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 
 use App\Models\User;
 use App\Models\Waste;
@@ -43,6 +42,7 @@ class AdminDashboardController extends Controller
     public function users(Request $request)
     {
         $query = User::latest();
+
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function($q) use ($search) {
@@ -50,6 +50,7 @@ class AdminDashboardController extends Controller
                   ->orWhere('email', 'like', "%{$search}%");
             });
         }
+
         $users = $query->paginate(15)->withQueryString();
         return view('admin.users', compact('users'));
     }
@@ -73,7 +74,7 @@ class AdminDashboardController extends Controller
     public function deleteUser(User $user)
     {
         if ($user->id === Auth::id()) {
-            return back()->with('error', 'Anda tidak bisa menghapus akun sendiri.');
+            return back()->with('error', 'Tidak bisa hapus akun sendiri.');
         }
 
         $user->delete();
@@ -85,6 +86,7 @@ class AdminDashboardController extends Controller
     public function wastes(Request $request)
     {
         $query = Waste::with('user')->latest();
+
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function($q) use ($search) {
@@ -93,9 +95,11 @@ class AdminDashboardController extends Controller
                   ->orWhere('tps', 'like', "%{$search}%");
             });
         }
+
         if ($request->filled('type')) {
             $query->where('type', $request->type);
         }
+
         $wastes = $query->paginate(15)->withQueryString();
         return view('admin.wastes', compact('wastes'));
     }
@@ -103,7 +107,7 @@ class AdminDashboardController extends Controller
     public function deleteWaste(Waste $waste)
     {
         $waste->delete();
-        return back()->with('success', 'Data sampah berhasil dihapus.');
+        return back()->with('success', 'Data sampah dihapus.');
     }
 
     // ==================== REPORTS ====================
@@ -111,6 +115,7 @@ class AdminDashboardController extends Controller
     public function reports(Request $request)
     {
         $query = Report::with('user')->latest();
+
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function($q) use ($search) {
@@ -118,9 +123,11 @@ class AdminDashboardController extends Controller
                   ->orWhere('deskripsi', 'like', "%{$search}%");
             });
         }
+
         if ($request->filled('status')) {
             $query->where('status', $request->status);
         }
+
         $reports = $query->paginate(15)->withQueryString();
         return view('admin.reports', compact('reports'));
     }
@@ -132,7 +139,7 @@ class AdminDashboardController extends Controller
         ]);
 
         $report->update(['status' => $request->status]);
-        return back()->with('success', 'Status laporan berhasil diperbarui.');
+        return back()->with('success', 'Status diperbarui.');
     }
 
     // ==================== REWARDS ====================
@@ -141,6 +148,7 @@ class AdminDashboardController extends Controller
     {
         $rewards = Reward::with('user')->latest()->paginate(15);
         $users   = User::orderBy('name')->get();
+
         return view('admin.rewards', compact('rewards', 'users'));
     }
 
@@ -151,21 +159,18 @@ class AdminDashboardController extends Controller
             'points'  => 'required|integer|min:1',
         ]);
 
-        Reward::create([
-            'user_id' => $request->user_id,
-            'points'  => $request->points,
-        ]);
+        Reward::create($request->only('user_id', 'points'));
 
-        return back()->with('success', 'Reward berhasil ditambahkan.');
+        return back()->with('success', 'Reward ditambahkan.');
     }
 
     public function deleteReward(Reward $reward)
     {
         $reward->delete();
-        return back()->with('success', 'Reward berhasil dihapus.');
+        return back()->with('success', 'Reward dihapus.');
     }
 
-    // ==================== SCHEDULES ====================
+    // ==================== SCHEDULE ====================
 
     public function schedules()
     {
@@ -176,34 +181,36 @@ class AdminDashboardController extends Controller
     public function storeSchedule(Request $request)
     {
         $request->validate([
-            'waktu_jemput'  => 'required|date',
-            'kategori'      => 'required|string|max:255',
-            'nama_petugas'  => 'required|string|max:255',
+            'waktu_jemput' => 'required|date',
+            'kategori'     => 'required|string|max:255',
+            'nama_petugas' => 'required|string|max:255',
         ]);
 
         Schedule::create($request->only('waktu_jemput', 'kategori', 'nama_petugas'));
-        return back()->with('success', 'Jadwal berhasil ditambahkan.');
+
+        return back()->with('success', 'Jadwal ditambahkan.');
     }
 
     public function updateSchedule(Request $request, Schedule $schedule)
     {
         $request->validate([
-            'waktu_jemput'  => 'required|date',
-            'kategori'      => 'required|string|max:255',
-            'nama_petugas'  => 'required|string|max:255',
+            'waktu_jemput' => 'required|date',
+            'kategori'     => 'required|string|max:255',
+            'nama_petugas' => 'required|string|max:255',
         ]);
 
         $schedule->update($request->only('waktu_jemput', 'kategori', 'nama_petugas'));
-        return back()->with('success', 'Jadwal berhasil diperbarui.');
+
+        return back()->with('success', 'Jadwal diupdate.');
     }
 
     public function deleteSchedule(Schedule $schedule)
     {
         $schedule->delete();
-        return back()->with('success', 'Jadwal berhasil dihapus.');
+        return back()->with('success', 'Jadwal dihapus.');
     }
 
-    // ==================== ANNOUNCEMENTS ====================
+    // ==================== ANNOUNCEMENT ====================
 
     public function announcements()
     {
@@ -218,7 +225,8 @@ class AdminDashboardController extends Controller
         ]);
 
         Announcement::create(['konten' => $request->konten]);
-        return back()->with('success', 'Pengumuman berhasil ditambahkan.');
+
+        return back()->with('success', 'Pengumuman ditambahkan.');
     }
 
     public function updateAnnouncement(Request $request, Announcement $announcement)
@@ -228,18 +236,17 @@ class AdminDashboardController extends Controller
         ]);
 
         $announcement->update(['konten' => $request->konten]);
-        return back()->with('success', 'Pengumuman berhasil diperbarui.');
+
+        return back()->with('success', 'Pengumuman diupdate.');
     }
 
     public function deleteAnnouncement(Announcement $announcement)
     {
         $announcement->delete();
-        return back()->with('success', 'Pengumuman berhasil dihapus.');
+        return back()->with('success', 'Pengumuman dihapus.');
     }
 
-        
-
-    // ==================== EDUCATIONS ====================
+    // ==================== EDUCATION ====================
 
     public function educations()
     {
@@ -249,55 +256,94 @@ class AdminDashboardController extends Controller
 
     public function storeEducation(Request $request)
     {
-        // ===== VALIDASI =====
         $request->validate([
-            'title'     => 'required|string|max:255',
-            'cover'     => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-            'file_pdf'  => 'required|mimes:pdf|max:2048',
+            'title'    => 'required|string|max:255',
+            'cover'    => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'file_pdf' => 'required|mimes:pdf|max:2048',
         ]);
 
         $coverName = null;
         $pdfName   = null;
 
-        // ===== UPLOAD COVER =====
         if ($request->hasFile('cover')) {
             $cover = $request->file('cover');
-            $coverName = time() . '_cover_' . $cover->getClientOriginalName();
+            $coverName = time().'_cover_'.$cover->getClientOriginalName();
             $cover->move(public_path('cover'), $coverName);
         }
 
-        // ===== UPLOAD PDF =====
         if ($request->hasFile('file_pdf')) {
             $file = $request->file('file_pdf');
-            $pdfName = time() . '_pdf_' . $file->getClientOriginalName();
+            $pdfName = time().'_pdf_'.$file->getClientOriginalName();
             $file->move(public_path('pdf'), $pdfName);
         }
 
-        // ===== SIMPAN =====
         Education::create([
-            'title'     => $request->title,
-            'cover'     => $coverName,
-            'file_pdf'  => $pdfName,
+            'title'    => $request->title,
+            'cover'    => $coverName,
+            'file_pdf' => $pdfName,
         ]);
 
-        return back()->with('success', 'Artikel berhasil ditambahkan!');
+        return back()->with('success', 'Artikel ditambahkan.');
     }
 
     public function deleteEducation(Education $education)
     {
-        // ===== HAPUS PDF =====
-        if ($education->file_pdf && file_exists(public_path('pdf/' . $education->file_pdf))) {
-            unlink(public_path('pdf/' . $education->file_pdf));
+        if ($education->file_pdf && file_exists(public_path('pdf/'.$education->file_pdf))) {
+            unlink(public_path('pdf/'.$education->file_pdf));
         }
 
-        // ===== HAPUS COVER =====
-        if ($education->cover && file_exists(public_path('cover/' . $education->cover))) {
-            unlink(public_path('cover/' . $education->cover));
+        if ($education->cover && file_exists(public_path('cover/'.$education->cover))) {
+            unlink(public_path('cover/'.$education->cover));
         }
 
         $education->delete();
 
-        return back()->with('success', 'Artikel berhasil dihapus!');
+        return back()->with('success', 'Artikel dihapus.');
+    }
+
+    public function edit(Education $education)
+    {
+        return view('admin.educations_edit', compact('education'));
+    }
+
+    public function update(Request $request, Education $education)
+    {
+        $request->validate([
+            'title'    => 'required|string|max:255',
+            'cover'    => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'file_pdf' => 'nullable|mimes:pdf|max:2048',
+        ]);
+
+        if ($request->hasFile('cover')) {
+
+            if ($education->cover && file_exists(public_path('cover/'.$education->cover))) {
+                unlink(public_path('cover/'.$education->cover));
+            }
+
+            $cover = $request->file('cover');
+            $coverName = time().'_cover_'.$cover->getClientOriginalName();
+            $cover->move(public_path('cover'), $coverName);
+
+            $education->cover = $coverName;
+        }
+
+        if ($request->hasFile('file_pdf')) {
+
+            if ($education->file_pdf && file_exists(public_path('pdf/'.$education->file_pdf))) {
+                unlink(public_path('pdf/'.$education->file_pdf));
+            }
+
+            $file = $request->file('file_pdf');
+            $pdfName = time().'_pdf_'.$file->getClientOriginalName();
+            $file->move(public_path('pdf'), $pdfName);
+
+            $education->file_pdf = $pdfName;
+        }
+
+        $education->title = $request->title;
+        $education->save();
+
+        return redirect()->route('admin.educations')
+            ->with('success', 'Artikel diupdate.');
     }
 }
-    
