@@ -58,6 +58,28 @@
                               class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none resize-none transition">{{ old('deskripsi') }}</textarea>
                 </div>
 
+                <!-- MAP PICKER FOR TPS LOCATION -->
+                <div>
+                    <label class="block text-sm font-semibold text-gray-600 mb-2">📍 Lokasi TPS (Opsional)</label>
+                    <p class="text-xs text-gray-500 mb-3">Pilih lokasi Tempat Penukaran Sampah tempat laporan ini terjadi</p>
+                    <x-map-picker />
+                </div>
+
+                <!-- TPS DROPDOWN ALTERNATIVE -->
+                <div>
+                    <label class="block text-sm font-semibold text-gray-600 mb-2">Atau Pilih dari Daftar (Opsional)</label>
+                    <select id="tps" name="tps_id" class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition">
+                        <option value="">-- Pilih TPS --</option>
+                        <option value="TPS Kebon Jeruk">TPS Kebon Jeruk</option>
+                        <option value="TPS Palmerah">TPS Palmerah</option>
+                        <option value="TPS Grogol">TPS Grogol</option>
+                        <option value="TPS Penjaringan">TPS Penjaringan</option>
+                        <option value="TPS Menteng">TPS Menteng</option>
+                        <option value="TPS Jagakarsa">TPS Jagakarsa</option>
+                        <option value="TPS Kramat Jati">TPS Kramat Jati</option>
+                    </select>
+                </div>
+
                 <div class="flex gap-3">
                     <button type="submit" class="flex-1 bg-sipilah-green text-white py-3 rounded-xl font-bold text-sm hover:bg-green-700 transition shadow-sm">
                         📤 Kirim Laporan

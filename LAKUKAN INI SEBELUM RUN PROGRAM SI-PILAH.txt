@@ -3,4 +3,5 @@ Lakukan ini sebelum run code dari repo github :
 composer install
 npm install
 npm run build
+
 Copy file env original
