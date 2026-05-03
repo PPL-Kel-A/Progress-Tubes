@@ -19,6 +19,7 @@ class Waste extends Model
         'tps',
         'image',
         'result',
+        'status', // ✅ TAMBAHKAN INI
     ];
 
     // casting tipe data

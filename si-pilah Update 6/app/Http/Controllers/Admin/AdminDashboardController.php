@@ -91,8 +91,8 @@ class AdminDashboardController extends Controller
             $search = $request->search;
             $query->where(function($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('category', 'like', "%{$search}%")
-                  ->orWhere('tps', 'like', "%{$search}%");
+                ->orWhere('category', 'like', "%{$search}%")
+                ->orWhere('tps', 'like', "%{$search}%");
             });
         }
 
@@ -102,6 +102,19 @@ class AdminDashboardController extends Controller
 
         $wastes = $query->paginate(15)->withQueryString();
         return view('admin.wastes', compact('wastes'));
+    }
+
+    public function updateWasteStatus(Request $request, Waste $waste)
+    {
+        $request->validate([
+            'status' => 'required|in:Pending,Proses,Selesai',
+        ]);
+
+        $waste->update([
+            'status' => $request->status
+        ]);
+
+        return back()->with('success', 'Status berhasil diupdate');
     }
 
     public function deleteWaste(Waste $waste)

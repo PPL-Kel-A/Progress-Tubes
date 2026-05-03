@@ -76,8 +76,9 @@ Route::middleware(['auth', 'is_admin'])
     Route::put('/users/{user}', [AdminDashboardController::class, 'updateUser'])->name('users.update');
     Route::delete('/users/{user}', [AdminDashboardController::class, 'deleteUser'])->name('users.delete');
 
-    // Wastes
+    // Waste
     Route::get('/wastes', [AdminDashboardController::class, 'wastes'])->name('wastes');
+    Route::patch('/wastes/{waste}/status', [AdminDashboardController::class, 'updateWasteStatus'])->name('wastes.updateStatus');
     Route::delete('/wastes/{waste}', [AdminDashboardController::class, 'deleteWaste'])->name('wastes.delete');
 
     // Reports
