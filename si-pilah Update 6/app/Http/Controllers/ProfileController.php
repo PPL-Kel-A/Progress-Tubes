@@ -79,7 +79,7 @@ class ProfileController extends Controller
     /**
      * Delete the user's profile photo.
      */
-    public function deletePhoto(Request $request): RedirectResponse
+    public function deletePhoto(Request $request)
     {
         $user = $request->user();
 
@@ -87,6 +87,11 @@ class ProfileController extends Controller
             Storage::disk('public')->delete($user->profile_photo);
             $user->profile_photo = null;
             $user->save();
+        }
+
+        // Check if this is an API request (from fetch)
+        if ($request->expectsJson()) {
+            return response()->json(['success' => true, 'message' => 'Foto berhasil dihapus']);
         }
 
         return Redirect::route('profile.edit')->with('status', 'photo-deleted');

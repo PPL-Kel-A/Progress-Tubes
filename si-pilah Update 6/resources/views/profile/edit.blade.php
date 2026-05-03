@@ -20,9 +20,9 @@
 
     {{-- ── Back Button ── --}}
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
-        <a href="{{ url()->previous() }}" class="inline-flex items-center gap-2 text-sm font-semibold text-green-700 hover:text-green-900 transition group">
+        <a href="{{ route('dashboard') }}" class="inline-flex items-center gap-2 text-sm font-semibold text-green-700 hover:text-green-900 hover:bg-green-50 px-3 py-2 rounded-lg transition group">
             <svg class="w-5 h-5 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
-            Kembali
+            Kembali ke Dashboard
         </a>
     </div>
 
@@ -138,6 +138,14 @@
                     @include('profile.partials.delete-user-form')
                 </div>
             </div>
+        </div>
+
+        {{-- Back Button --}}
+        <div class="flex justify-center mt-10">
+            <a href="{{ route('dashboard') }}" class="inline-flex items-center gap-2 px-6 py-3 text-sm font-semibold text-white bg-green-600 hover:bg-green-700 rounded-lg shadow-md hover:shadow-lg transition">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-3m0 0l7-4 7 4M5 9v7a1 1 0 001 1h12a1 1 0 001-1V9m-9 5h4"/></svg>
+                Kembali ke Dashboard
+            </a>
         </div>
 
     </div>

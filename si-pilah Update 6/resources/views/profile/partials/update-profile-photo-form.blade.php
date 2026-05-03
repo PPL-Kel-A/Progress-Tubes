@@ -25,16 +25,12 @@
                                     Klik tombol "<strong>Ubah Foto</strong>" di bawah untuk mengganti foto Anda dengan yang baru.
                                 </p>
                             </div>
-                            <form method="post" action="{{ route('profile.deletePhoto') }}" class="inline">
-                                @csrf
-                                @method('delete')
-                                <button type="submit" 
-                                        onclick="return confirm('Yakin ingin menghapus foto profil?')"
-                                        class="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-semibold text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg transition">
-                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
-                                    Hapus Foto
-                                </button>
-                            </form>
+                            <button type="button"
+                                    onclick="openDeleteModal()"
+                                    class="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-semibold text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg transition">
+                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
+                                Hapus Foto
+                            </button>
                         </div>
                     </div>
                 @else
@@ -151,7 +147,7 @@
                         x-data="{ show: true }"
                         x-show="show"
                         x-transition.opacity.duration.500ms
-                        x-init="setTimeout(() => show = false, 3000)"
+                        x-init="setTimeout(() => show = false, 5000)"
                         class="text-sm font-medium text-green-700 bg-green-50 px-3 py-2 rounded-lg text-center sm:text-left"
                     >✅ Foto berhasil tersimpan!</p>
                 @endif
@@ -161,13 +157,40 @@
                         x-data="{ show: true }"
                         x-show="show"
                         x-transition.opacity.duration.500ms
-                        x-init="setTimeout(() => show = false, 3000)"
+                        x-init="setTimeout(() => show = false, 5000)"
                         class="text-sm font-medium text-amber-700 bg-amber-50 px-3 py-2 rounded-lg text-center sm:text-left"
                     >🗑️ Foto berhasil dihapus!</p>
                 @endif
             </div>
         </div>
     </form>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="deletePhotoModal" class="modal-overlay" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.5); z-index: 1000; justify-content: center; align-items: center;">
+        <div class="modal-content" style="background: white; border-radius: 16px; box-shadow: 0 20px 25px rgba(0, 0, 0, 0.1); max-width: 400px; width: 90%; padding: 24px; margin: 0 16px;">
+            <div style="margin-bottom: 16px;">
+                <h3 style="font-size: 20px; font-weight: bold; color: #111827;">Hapus Foto Profil?</h3>
+            </div>
+            <div style="margin-bottom: 24px;">
+                <p style="color: #4b5563; font-size: 14px; line-height: 1.5;">
+                    Apakah Anda yakin ingin menghapus foto profil? Foto profil Anda akan diubah menjadi inisial nama Anda.
+                </p>
+            </div>
+            <div style="display: flex; gap: 12px;">
+                <button type="button" 
+                        onclick="closeDeleteModal()"
+                        style="flex: 1; padding: 8px 16px; color: #374151; font-weight: 600; border: 1px solid #d1d5db; border-radius: 8px; background: white; cursor: pointer; transition: all 0.2s;">
+                    Batalkan
+                </button>
+                <button type="button"
+                        onclick="confirmDeletePhoto()"
+                        id="confirmDeleteBtn"
+                        style="flex: 1; padding: 8px 16px; color: white; font-weight: 600; background: #dc2626; border: none; border-radius: 8px; cursor: pointer; transition: all 0.2s;">
+                    ✓ Yakin
+                </button>
+            </div>
+        </div>
+    </div>
 
     <script>
         const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2MB
@@ -242,6 +265,118 @@
             document.getElementById('submitBtn').disabled = true;
             document.getElementById('submitText').classList.add('hidden');
             document.getElementById('loadingSpinner').classList.remove('hidden');
+        });
+
+        // Modal functions
+        function openDeleteModal() {
+            const modal = document.getElementById('deletePhotoModal');
+            if (modal) {
+                modal.style.display = 'flex';
+            }
+        }
+
+        function closeDeleteModal() {
+            const modal = document.getElementById('deletePhotoModal');
+            if (modal) {
+                modal.style.display = 'none';
+            }
+        }
+
+        // Close modal when clicking outside
+        document.addEventListener('click', function(e) {
+            const modal = document.getElementById('deletePhotoModal');
+            if (modal && e.target === modal) {
+                closeDeleteModal();
+            }
+        });
+
+        // Close modal with ESC key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeDeleteModal();
+            }
+        });
+
+        async function confirmDeletePhoto() {
+            const btn = document.getElementById('confirmDeleteBtn');
+            const originalText = btn.textContent;
+            
+            // Show loading state
+            btn.disabled = true;
+            btn.textContent = '⏳ Menghapus...';
+            btn.style.opacity = '0.7';
+
+            try {
+                const response = await fetch('{{ route("profile.deletePhoto") }}', {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value,
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    closeDeleteModal();
+                    showSuccessNotification('✅ Foto berhasil dihapus!');
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 2000);
+                } else {
+                    throw new Error('Gagal menghapus foto');
+                }
+            } catch (error) {
+                btn.disabled = false;
+                btn.textContent = originalText;
+                btn.style.opacity = '1';
+                showErrorNotification('❌ Gagal menghapus foto. Silakan coba lagi.');
+            }
+        }
+
+        function showSuccessNotification(message) {
+            const notification = document.createElement('div');
+            notification.style.cssText = 'position: fixed; top: 16px; right: 16px; background: #dcfce7; border: 1px solid #86efac; color: #166534; padding: 12px 16px; border-radius: 8px; box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1); z-index: 2000; font-size: 14px; font-weight: 500;';
+            notification.textContent = message;
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        function showErrorNotification(message) {
+            const notification = document.createElement('div');
+            notification.style.cssText = 'position: fixed; top: 16px; right: 16px; background: #fee2e2; border: 1px solid #fca5a5; color: #991b1b; padding: 12px 16px; border-radius: 8px; box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1); z-index: 2000; font-size: 14px; font-weight: 500;';
+            notification.textContent = message;
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        // Add hover effects to modal buttons
+        window.addEventListener('load', function() {
+            const cancelBtn = document.querySelector('[onclick="closeDeleteModal()"]');
+            const confirmBtn = document.getElementById('confirmDeleteBtn');
+            
+            if (cancelBtn) {
+                cancelBtn.addEventListener('mouseover', function() {
+                    this.style.backgroundColor = '#f3f4f6';
+                });
+                cancelBtn.addEventListener('mouseout', function() {
+                    this.style.backgroundColor = 'white';
+                });
+            }
+            
+            if (confirmBtn) {
+                confirmBtn.addEventListener('mouseover', function() {
+                    this.style.backgroundColor = '#b91c1c';
+                });
+                confirmBtn.addEventListener('mouseout', function() {
+                    this.style.backgroundColor = '#dc2626';
+                });
+            }
         });
     </script>
 </section>
