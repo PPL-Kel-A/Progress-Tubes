@@ -37,9 +37,15 @@
             <div class="relative px-8 py-10 flex flex-col sm:flex-row items-start sm:items-center gap-6">
                 {{-- Avatar --}}
                 <div class="flex-shrink-0">
-                    <div class="w-20 h-20 rounded-2xl flex items-center justify-center text-3xl font-extrabold text-green-800 shadow-inner" style="background: linear-gradient(135deg, #a5d6a7, #c8e6c9); border: 3px solid rgba(255,255,255,.3);">
-                        {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
-                    </div>
+                    @if (auth()->user()->profile_photo)
+                        <img src="{{ Storage::url(auth()->user()->profile_photo) }}" 
+                             alt="Profile Photo" 
+                             class="w-20 h-20 rounded-2xl object-cover shadow-inner border-3 border-white/30">
+                    @else
+                        <div class="w-20 h-20 rounded-2xl flex items-center justify-center text-3xl font-extrabold text-green-800 shadow-inner" style="background: linear-gradient(135deg, #a5d6a7, #c8e6c9); border: 3px solid rgba(255,255,255,.3);">
+                            {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                        </div>
+                    @endif
                 </div>
 
                 {{-- Info --}}
@@ -76,6 +82,24 @@
             <div class="px-6 py-6">
                 <div class="max-w-xl">
                     @include('profile.partials.update-profile-information-form')
+                </div>
+            </div>
+        </div>
+
+        {{-- Profile Photo Card --}}
+        <div class="bg-white rounded-2xl shadow-sm border border-cyan-100/80 overflow-hidden hover:shadow-md transition-shadow duration-300">
+            <div class="px-6 py-4 border-b border-cyan-50 flex items-center gap-3" style="background: linear-gradient(90deg, #ecf7f8, #ffffff);">
+                <span class="flex items-center justify-center w-9 h-9 rounded-xl bg-cyan-100 text-cyan-700">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                </span>
+                <div>
+                    <h3 class="text-base font-bold text-gray-800">Foto Profil</h3>
+                    <p class="text-xs text-gray-500">Unggah atau ubah foto profil akun Anda</p>
+                </div>
+            </div>
+            <div class="px-6 py-6">
+                <div class="max-w-xl">
+                    @include('profile.partials.update-profile-photo-form')
                 </div>
             </div>
         </div>
