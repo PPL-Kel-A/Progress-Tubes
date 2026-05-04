@@ -20,9 +20,9 @@
 
     {{-- ── Back Button ── --}}
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
-        <a href="{{ url()->previous() }}" class="inline-flex items-center gap-2 text-sm font-semibold text-green-700 hover:text-green-900 transition group">
+        <a href="{{ route('dashboard') }}" class="inline-flex items-center gap-2 text-sm font-semibold text-green-700 hover:text-green-900 hover:bg-green-50 px-3 py-2 rounded-lg transition group">
             <svg class="w-5 h-5 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
-            Kembali
+            Kembali ke Dashboard
         </a>
     </div>
 
@@ -37,9 +37,15 @@
             <div class="relative px-8 py-10 flex flex-col sm:flex-row items-start sm:items-center gap-6">
                 {{-- Avatar --}}
                 <div class="flex-shrink-0">
-                    <div class="w-20 h-20 rounded-2xl flex items-center justify-center text-3xl font-extrabold text-green-800 shadow-inner" style="background: linear-gradient(135deg, #a5d6a7, #c8e6c9); border: 3px solid rgba(255,255,255,.3);">
-                        {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
-                    </div>
+                    @if (auth()->user()->profile_photo)
+                        <img src="{{ Storage::url(auth()->user()->profile_photo) }}" 
+                             alt="Profile Photo" 
+                             class="w-20 h-20 rounded-2xl object-cover shadow-inner border-3 border-white/30">
+                    @else
+                        <div class="w-20 h-20 rounded-2xl flex items-center justify-center text-3xl font-extrabold text-green-800 shadow-inner" style="background: linear-gradient(135deg, #a5d6a7, #c8e6c9); border: 3px solid rgba(255,255,255,.3);">
+                            {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                        </div>
+                    @endif
                 </div>
 
                 {{-- Info --}}
@@ -80,6 +86,24 @@
             </div>
         </div>
 
+        {{-- Profile Photo Card --}}
+        <div class="bg-white rounded-2xl shadow-sm border border-cyan-100/80 overflow-hidden hover:shadow-md transition-shadow duration-300">
+            <div class="px-6 py-4 border-b border-cyan-50 flex items-center gap-3" style="background: linear-gradient(90deg, #ecf7f8, #ffffff);">
+                <span class="flex items-center justify-center w-9 h-9 rounded-xl bg-cyan-100 text-cyan-700">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                </span>
+                <div>
+                    <h3 class="text-base font-bold text-gray-800">Foto Profil</h3>
+                    <p class="text-xs text-gray-500">Unggah atau ubah foto profil akun Anda</p>
+                </div>
+            </div>
+            <div class="px-6 py-6">
+                <div class="max-w-xl">
+                    @include('profile.partials.update-profile-photo-form')
+                </div>
+            </div>
+        </div>
+
         {{-- Password Card --}}
         <div class="bg-white rounded-2xl shadow-sm border border-emerald-100/80 overflow-hidden hover:shadow-md transition-shadow duration-300">
             <div class="px-6 py-4 border-b border-emerald-50 flex items-center gap-3" style="background: linear-gradient(90deg, #ecfdf5, #ffffff);">
@@ -114,6 +138,14 @@
                     @include('profile.partials.delete-user-form')
                 </div>
             </div>
+        </div>
+
+        {{-- Back Button --}}
+        <div class="flex justify-center mt-10">
+            <a href="{{ route('dashboard') }}" class="inline-flex items-center gap-2 px-6 py-3 text-sm font-semibold text-white bg-green-600 hover:bg-green-700 rounded-lg shadow-md hover:shadow-lg transition">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-3m0 0l7-4 7 4M5 9v7a1 1 0 001 1h12a1 1 0 001-1V9m-9 5h4"/></svg>
+                Kembali ke Dashboard
+            </a>
         </div>
 
     </div>

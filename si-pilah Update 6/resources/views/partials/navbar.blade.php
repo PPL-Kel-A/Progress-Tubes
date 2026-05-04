@@ -62,9 +62,15 @@
                 <div class="flex items-center" x-data="{ openProfile: false }">
                     <div class="relative">
                         <button @click="openProfile = !openProfile" class="rounded-full bg-gradient-to-tr from-green-400 to-[#1b5e20] p-[2.5px] hover:scale-105 transition-transform duration-300 shadow-sm focus:outline-none">
-                            <span class="h-full w-full flex items-center justify-center rounded-full bg-white text-[#1b5e20] font-extrabold text-lg px-3 py-1">
-                                {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
-                            </span>
+                            @if(Auth::user()->profile_photo)
+                                <img src="{{ Storage::url(Auth::user()->profile_photo) }}" 
+                                     alt="Profile Photo" 
+                                     class="h-9 w-9 rounded-full object-cover bg-white">
+                            @else
+                                <span class="h-full w-full flex items-center justify-center rounded-full bg-white text-[#1b5e20] font-extrabold text-lg px-3 py-1">
+                                    {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+                                </span>
+                            @endif
                         </button>
                         <div x-show="openProfile" x-transition @click.away="openProfile = false"
                             class="absolute right-0 mt-2 w-44 bg-white border rounded-lg shadow-lg z-50"
