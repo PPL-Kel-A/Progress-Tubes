@@ -35,10 +35,42 @@
             </div>
 
             <!-- KANAN (USER) -->
-            <div class="hidden sm:flex items-center">
+            <div class="hidden sm:flex items-center space-x-4">
                 @auth
-                    <div class="bg-green-100 text-green-700 px-4 py-2 rounded-full text-sm font-semibold">
-                        {{ Auth::user()->name }}
+                    {{-- Notification Bell --}}
+                    @php
+                        $unreadCount = \App\Models\Announcement::where('created_at', '>=', now()->subDays(3))->count();
+                    @endphp
+                    <a href="{{ route('announcements.index') }}" class="relative p-2 rounded-xl hover:bg-green-50 transition group" title="Pengumuman">
+                        <svg class="w-5 h-5 text-gray-500 group-hover:text-green-700 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+                        @if($unreadCount > 0)
+                            <span class="absolute -top-0.5 -right-0.5 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white px-1 shadow-sm">
+                                {{ $unreadCount > 9 ? '9+' : $unreadCount }}
+                            </span>
+                        @endif
+                    </a>
+
+                    {{-- Profile Avatar with Dropdown --}}
+                    <div class="flex items-center space-x-3" x-data="{ openProfile: false }">
+                        <span class="font-bold text-sm text-green-700 whitespace-nowrap">
+                            {{ Auth::user()->name }}
+                        </span>
+                        <div class="relative">
+                            <button @click="openProfile = !openProfile" class="rounded-full bg-gradient-to-tr from-green-400 to-[#1b5e20] p-[2.5px] hover:scale-105 transition-transform duration-300 shadow-sm focus:outline-none">
+                                <span class="h-full w-full flex items-center justify-center rounded-full bg-white text-[#1b5e20] font-extrabold text-lg px-3 py-1">
+                                    {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+                                </span>
+                            </button>
+                            <div x-show="openProfile" x-transition @click.away="openProfile = false"
+                                class="absolute right-0 mt-2 w-44 bg-white border rounded-lg shadow-lg z-50"
+                                :class="{ 'block': openProfile, 'hidden': !openProfile }" style="display: none;">
+                                <a href="{{ route('profile.edit') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50 rounded-t-lg">Pengaturan Profil</a>
+                                <form method="POST" action="{{ route('logout') }}">
+                                    @csrf
+                                    <button type="submit" class="w-full text-left block px-4 py-2 text-sm text-red-600 hover:bg-red-50 rounded-b-lg">Logout</button>
+                                </form>
+                            </div>
+                        </div>
                     </div>
                 @endauth
             </div>
