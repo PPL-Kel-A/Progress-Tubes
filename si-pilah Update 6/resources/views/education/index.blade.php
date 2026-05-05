@@ -84,5 +84,8 @@
             {{ $educations->links() }}
         </div>
 
+        @include('partials.footer')
+
+
     </div>
 </x-app-layout>

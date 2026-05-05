@@ -31,8 +31,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-    Route::post('/profile-photo/upload', [ProfileController::class, 'uploadPhoto'])->name('profile.uploadPhoto');
-    Route::delete('/profile-photo', [ProfileController::class, 'deletePhoto'])->name('profile.deletePhoto');
 
     // Waste
     Route::get('/waste/select', fn () => view('waste.select'))->name('waste.select');
@@ -78,9 +76,8 @@ Route::middleware(['auth', 'is_admin'])
     Route::put('/users/{user}', [AdminDashboardController::class, 'updateUser'])->name('users.update');
     Route::delete('/users/{user}', [AdminDashboardController::class, 'deleteUser'])->name('users.delete');
 
-    // Waste
+    // Wastes
     Route::get('/wastes', [AdminDashboardController::class, 'wastes'])->name('wastes');
-    Route::patch('/wastes/{waste}/status', [AdminDashboardController::class, 'updateWasteStatus'])->name('wastes.updateStatus');
     Route::delete('/wastes/{waste}', [AdminDashboardController::class, 'deleteWaste'])->name('wastes.delete');
 
     // Reports

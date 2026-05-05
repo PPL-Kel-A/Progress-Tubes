@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Waste;
-use App\Models\CollectionPoint;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
@@ -25,38 +24,17 @@ class WasteController extends Controller
     // =========================
     public function preview(Request $request)
     {
-        // Accept either tps_id (from map picker) or tps (from dropdown)
-        $rules = [
-            'name' => 'required|string|max:255',
+        $validated = $request->validate([
+            'name' => 'required|string|max:255', // 🔥 ganti user_id jadi name
             'type' => 'required|in:organic,inorganic',
             'category' => 'required|string|max:255',
             'weight' => 'required|numeric|min:0.1',
+            'tps' => 'required|string|max:255',
+            'desa' => 'required|string|max:255',
+            'kecamatan' => 'required|string|max:255',
+            'kota' => 'required|string|max:255',
             'image' => 'required|image|max:2048'
-        ];
-
-        // If tps_id is provided (from map picker), use it; otherwise require tps and location
-        if ($request->has('tps_id') && !empty($request->tps_id)) {
-            $rules['tps_id'] = 'required|exists:collection_points,id';
-        } else {
-            $rules['tps'] = 'required|string|max:255';
-            $rules['desa'] = 'required|string|max:255';
-            $rules['kecamatan'] = 'required|string|max:255';
-            $rules['kota'] = 'required|string|max:255';
-        }
-
-        $validated = $request->validate($rules);
-
-        // If tps_id is provided, fetch collection point and auto-fill location data
-        if (!empty($request->tps_id)) {
-            $collectionPoint = CollectionPoint::find($request->tps_id);
-            if ($collectionPoint) {
-                $validated['tps'] = $collectionPoint->name;
-                $validated['desa'] = $collectionPoint->desa;
-                $validated['kecamatan'] = $collectionPoint->kecamatan;
-                $validated['kota'] = $collectionPoint->kota;
-                $validated['tps_id'] = $collectionPoint->id;
-            }
-        }
+        ]);
 
         // =========================
         // HITUNG RESULT
@@ -82,38 +60,17 @@ class WasteController extends Controller
     // =========================
     public function store(Request $request)
     {
-        // Accept either tps_id (from map picker) or tps (from dropdown)
-        $rules = [
-            'name' => 'required|string|max:255',
+        $validated = $request->validate([
+            'name' => 'required|string|max:255', // 🔥 tambahin name
             'type' => 'required|in:organic,inorganic',
             'category' => 'required|string|max:255',
             'weight' => 'required|numeric|min:0.1',
+            'tps' => 'required|string|max:255',
+            'desa' => 'required|string|max:255',
+            'kecamatan' => 'required|string|max:255',
+            'kota' => 'required|string|max:255',
             'image' => 'required|string',
-        ];
-
-        // If tps_id is provided (from map picker), use it; otherwise require tps and location
-        if ($request->has('tps_id') && !empty($request->tps_id)) {
-            $rules['tps_id'] = 'required|exists:collection_points,id';
-        } else {
-            $rules['tps'] = 'required|string|max:255';
-            $rules['desa'] = 'required|string|max:255';
-            $rules['kecamatan'] = 'required|string|max:255';
-            $rules['kota'] = 'required|string|max:255';
-        }
-
-        $validated = $request->validate($rules);
-
-        // If tps_id is provided, fetch collection point and auto-fill location data
-        if (!empty($request->tps_id)) {
-            $collectionPoint = CollectionPoint::find($request->tps_id);
-            if ($collectionPoint) {
-                $validated['tps'] = $collectionPoint->name;
-                $validated['desa'] = $collectionPoint->desa;
-                $validated['kecamatan'] = $collectionPoint->kecamatan;
-                $validated['kota'] = $collectionPoint->kota;
-                $validated['tps_id'] = $collectionPoint->id;
-            }
-        }
+        ]);
 
         // =========================
         // HITUNG ULANG RESULT
@@ -157,7 +114,6 @@ class WasteController extends Controller
             'category' => $validated['category'],
             'weight' => $validated['weight'],
             'tps' => $fullLocation,
-            'tps_id' => $validated['tps_id'] ?? null,
             'image' => $newPath,
             'result' => $result,
         ]);

@@ -9,6 +9,7 @@
     <script src="//unpkg.com/alpinejs" defer></script>
     <style>
         body { font-family: 'Poppins', sans-serif; }
+        html { scroll-behavior: smooth; }
         .bg-sipilah-green { background-color: #1b5e20; }
         .text-sipilah-green { color: #1b5e20; }
         .hero-pattern { background-image: url('https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80'); background-size: cover; background-position: center; }
@@ -18,7 +19,7 @@
 
     @include('partials.navbar', ['variant' => 'welcome'])
 
-    <div class="hero-pattern h-[500px] relative flex items-center">
+    <div id="home" class="hero-pattern h-[500px] relative flex items-center">
         <div class="absolute inset-0 bg-black bg-opacity-60"></div> <div class="container mx-auto px-6 relative z-10 text-center md:text-left">
             <h1 class="text-4xl md:text-6xl font-extrabold text-white mb-4 leading-tight">
                 Ubah Sampahmu <br> <span class="text-green-400">Menjadi Energi.</span>
@@ -32,7 +33,7 @@
         </div>
     </div>
 
-    <div class="container mx-auto px-6 py-16 text-center">
+    <div id="education" class="container mx-auto px-6 py-16 text-center">
         <h2 class="text-3xl font-bold text-gray-800 mb-12">Bagaimana Cara Kerjanya?</h2>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
             <div class="p-6 bg-white rounded-xl shadow-sm border border-gray-100">
@@ -40,19 +41,19 @@
                 <h3 class="text-xl font-bold mb-2">1. Daftar & Buat Akun</h3>
                 <p class="text-gray-600">Buat akun Si-Pilah secara gratis untuk mulai melacak kontribusi dan mendapatkan akses ke jadwal bank sampah terdekat.</p>
             </div>
-            <div class="p-6 bg-white rounded-xl shadow-sm border border-gray-100">
+            <div id="waste-banks" class="p-6 bg-white rounded-xl shadow-sm border border-gray-100">
                 <div class="text-5xl mb-4">♻️</div>
                 <h3 class="text-xl font-bold mb-2">2. Pilah & Setor</h3>
                 <p class="text-gray-600">Pilah sampah organik dan anorganik. Jadwalkan penjemputan atau antar langsung ke fasilitas pengolahan kami.</p>
             </div>
-            <div class="p-6 bg-white rounded-xl shadow-sm border border-gray-100">
+            <div id="reward" class="p-6 bg-white rounded-xl shadow-sm border border-gray-100">
                 <div class="text-5xl mb-4">🎁</div>
                 <h3 class="text-xl font-bold mb-2">3. Dapatkan Reward</h3>
                 <p class="text-gray-600">Sampahmu akan dikonversi menjadi energi. Dapatkan poin untuk setiap kontribusi dan tukarkan dengan berbagai hadiah menarik.</p>
             </div>
         </div>
     </div>
-    <div class="bg-white py-16 border-t border-gray-100">
+    <div id="berita" class="bg-white py-16 border-t border-gray-100">
         <div class="container mx-auto px-6">
             <div class="flex justify-between items-end mb-10">
                 <div>

@@ -9,10 +9,10 @@
             <div>
                 <h4 class="font-bold text-sm uppercase tracking-wider text-gray-300 mb-4">Tautan Cepat</h4>
                 <ul class="space-y-2 text-sm text-gray-400">
-                    <li><a href="/" class="hover:text-green-400 transition">Home</a></li>
-                    <li><a href="#" class="hover:text-green-400 transition">Education</a></li>
-                    <li><a href="#" class="hover:text-green-400 transition">Waste Banks</a></li>
-                    <li><a href="#" class="hover:text-green-400 transition">Reward</a></li>
+                    <li><a href="/#home" class="hover:text-green-400 transition">Home</a></li>
+                    <li><a href="/#education" class="hover:text-green-400 transition">Education</a></li>
+                    <li><a href="/#waste-banks" class="hover:text-green-400 transition">Waste Banks</a></li>
+                    <li><a href="/#reward" class="hover:text-green-400 transition">Reward</a></li>
                 </ul>
             </div>
             <div>
