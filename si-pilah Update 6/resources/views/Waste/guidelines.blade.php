@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Panduan Pengelolaan Sampah</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="//unpkg.com/alpinejs" defer></script>
+    <style>
+        .faq-answer { transition: max-height 0.3s ease, opacity 0.3s ease, padding 0.3s ease; overflow: hidden; }
+    </style>
 </head>
 
 <body class="bg-[#f8fafc] font-sans">
@@ -107,6 +111,75 @@
         </a>
 
     </div>
+
+    {{-- FAQ Section --}}
+    <div class="mt-20 mb-8" x-data="{ active: null }">
+        <div class="text-center mb-10">
+            <span class="inline-block bg-green-100 text-green-700 text-xs font-bold uppercase tracking-widest px-4 py-1.5 rounded-full mb-4">FAQ</span>
+            <h2 class="text-3xl font-bold text-gray-800 mb-3">Pertanyaan yang Sering Diajukan</h2>
+            <p class="text-gray-500 max-w-xl mx-auto">Temukan jawaban untuk pertanyaan umum seputar pengelolaan sampah di Si-Pilah.</p>
+        </div>
+
+        <div class="max-w-3xl mx-auto space-y-4">
+
+            {{-- FAQ 1 --}}
+            <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+                <button @click="active = active === 1 ? null : 1" class="w-full flex items-center justify-between px-7 py-5 text-left hover:bg-gray-50 transition">
+                    <span class="font-semibold text-gray-800">Apa saja jenis sampah yang diterima di Si-Pilah?</span>
+                    <svg class="w-5 h-5 text-gray-400 transition-transform duration-300" :class="{ 'rotate-180': active === 1 }" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                </button>
+                <div x-show="active === 1" x-collapse x-cloak class="px-7 pb-5 text-sm text-gray-600 leading-relaxed">
+                    Si-Pilah menerima dua kategori utama: <strong>sampah organik</strong> (sisa makanan, daun, dan bahan alami lainnya) serta <strong>sampah anorganik</strong> (plastik, kertas, logam, kaca, dan elektronik kecil). Pastikan sampah sudah dipilah dengan benar sebelum disetor ke bank sampah terdekat.
+                </div>
+            </div>
+
+            {{-- FAQ 2 --}}
+            <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+                <button @click="active = active === 2 ? null : 2" class="w-full flex items-center justify-between px-7 py-5 text-left hover:bg-gray-50 transition">
+                    <span class="font-semibold text-gray-800">Bagaimana cara menyetorkan sampah ke bank sampah?</span>
+                    <svg class="w-5 h-5 text-gray-400 transition-transform duration-300" :class="{ 'rotate-180': active === 2 }" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                </button>
+                <div x-show="active === 2" x-collapse x-cloak class="px-7 pb-5 text-sm text-gray-600 leading-relaxed">
+                    Anda dapat menyetorkan sampah dengan dua cara: <strong>antar langsung</strong> ke lokasi bank sampah terdekat pada jam operasional, atau <strong>jadwalkan penjemputan</strong> melalui aplikasi Si-Pilah. Pastikan sampah sudah dipilah, dibersihkan, dan dikemas rapi sebelum disetor agar proses verifikasi berjalan lebih cepat.
+                </div>
+            </div>
+
+            {{-- FAQ 3 --}}
+            <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+                <button @click="active = active === 3 ? null : 3" class="w-full flex items-center justify-between px-7 py-5 text-left hover:bg-gray-50 transition">
+                    <span class="font-semibold text-gray-800">Bagaimana sistem poin reward bekerja?</span>
+                    <svg class="w-5 h-5 text-gray-400 transition-transform duration-300" :class="{ 'rotate-180': active === 3 }" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                </button>
+                <div x-show="active === 3" x-collapse x-cloak class="px-7 pb-5 text-sm text-gray-600 leading-relaxed">
+                    Setiap kali Anda menyetorkan sampah, berat dan jenis sampah akan diverifikasi oleh petugas. Poin reward diberikan berdasarkan <strong>berat (kg)</strong> dan <strong>jenis sampah</strong> yang disetor. Poin yang terkumpul dapat ditukarkan dengan berbagai hadiah menarik atau didonasikan untuk program lingkungan.
+                </div>
+            </div>
+
+            {{-- FAQ 4 --}}
+            <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+                <button @click="active = active === 4 ? null : 4" class="w-full flex items-center justify-between px-7 py-5 text-left hover:bg-gray-50 transition">
+                    <span class="font-semibold text-gray-800">Apakah ada batas minimum sampah yang bisa disetor?</span>
+                    <svg class="w-5 h-5 text-gray-400 transition-transform duration-300" :class="{ 'rotate-180': active === 4 }" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                </button>
+                <div x-show="active === 4" x-collapse x-cloak class="px-7 pb-5 text-sm text-gray-600 leading-relaxed">
+                    Tidak ada batas minimum untuk penyetoran langsung ke bank sampah. Namun, untuk layanan <strong>penjemputan ke rumah</strong>, disarankan minimal <strong>2 kg</strong> agar proses penjemputan lebih efisien. Anda bisa mengumpulkan sampah terlebih dahulu selama beberapa hari sebelum menjadwalkan penjemputan.
+                </div>
+            </div>
+
+            {{-- FAQ 5 --}}
+            <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+                <button @click="active = active === 5 ? null : 5" class="w-full flex items-center justify-between px-7 py-5 text-left hover:bg-gray-50 transition">
+                    <span class="font-semibold text-gray-800">Apa yang terjadi pada sampah setelah disetor?</span>
+                    <svg class="w-5 h-5 text-gray-400 transition-transform duration-300" :class="{ 'rotate-180': active === 5 }" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                </button>
+                <div x-show="active === 5" x-collapse x-cloak class="px-7 pb-5 text-sm text-gray-600 leading-relaxed">
+                    Sampah organik akan diproses menjadi <strong>kompos</strong> atau diolah menjadi <strong>bioenergi</strong>. Sampah anorganik akan disortir ulang, kemudian dikirim ke fasilitas daur ulang mitra kami untuk diproses menjadi bahan baku baru. Seluruh proses dapat Anda pantau melalui fitur <strong>tracking</strong> di aplikasi Si-Pilah.
+                </div>
+            </div>
+
+        </div>
+    </div>
+
 </div>
 
 </body>

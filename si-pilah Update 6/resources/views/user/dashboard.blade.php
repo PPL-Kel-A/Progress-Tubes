@@ -217,6 +217,139 @@
             </div>
         </div>
 
+        {{-- ── FAQ Section ── --}}
+        <div class="mt-14 mb-4" id="faq-section">
+            <div class="text-center mb-10">
+                <span class="inline-block bg-green-100 text-sipilah-green text-xs font-bold uppercase tracking-widest px-4 py-1.5 rounded-full mb-3">FAQ</span>
+                <h2 class="text-2xl md:text-3xl font-bold text-gray-800">Pertanyaan yang Sering Diajukan</h2>
+                <p class="text-gray-500 mt-2 max-w-xl mx-auto text-sm">Temukan jawaban atas pertanyaan umum seputar penggunaan Si-Pilah dan pengelolaan sampah.</p>
+            </div>
+
+            <div class="max-w-3xl mx-auto space-y-4" x-data="{ activeAccordion: null }">
+
+                {{-- FAQ 1 --}}
+                <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden transition-all duration-300"
+                     :class="activeAccordion === 1 ? 'ring-2 ring-green-200 shadow-md' : 'hover:shadow-md'">
+                    <button @click="activeAccordion = activeAccordion === 1 ? null : 1"
+                            class="w-full flex items-center justify-between px-6 py-5 text-left focus:outline-none group">
+                        <div class="flex items-center gap-4">
+                            <span class="flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center text-lg"
+                                  :class="activeAccordion === 1 ? 'bg-green-600 text-white' : 'bg-green-100 text-green-600'">
+                                🗑️
+                            </span>
+                            <span class="font-semibold text-gray-800 group-hover:text-sipilah-green transition">Bagaimana cara menyetor sampah di Si-Pilah?</span>
+                        </div>
+                        <svg class="w-5 h-5 text-gray-400 transition-transform duration-300 flex-shrink-0"
+                             :class="activeAccordion === 1 ? 'rotate-180 text-green-600' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                        </svg>
+                    </button>
+                    <div x-show="activeAccordion === 1" x-collapse x-cloak>
+                        <div class="px-6 pb-5 text-sm text-gray-600 leading-relaxed border-t border-gray-50 pt-4">
+                            Untuk menyetor sampah, klik tombol <strong>"+ Setor Sampah Baru"</strong> di bagian atas dashboard. Pilih jenis sampah (organik atau anorganik), masukkan kategori dan berat sampah, lalu pilih lokasi TPS terdekat. Setelah konfirmasi, setoran Anda akan tercatat dan poin reward akan otomatis ditambahkan ke akun Anda.
+                        </div>
+                    </div>
+                </div>
+
+                {{-- FAQ 2 --}}
+                <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden transition-all duration-300"
+                     :class="activeAccordion === 2 ? 'ring-2 ring-green-200 shadow-md' : 'hover:shadow-md'">
+                    <button @click="activeAccordion = activeAccordion === 2 ? null : 2"
+                            class="w-full flex items-center justify-between px-6 py-5 text-left focus:outline-none group">
+                        <div class="flex items-center gap-4">
+                            <span class="flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center text-lg"
+                                  :class="activeAccordion === 2 ? 'bg-yellow-500 text-white' : 'bg-yellow-100 text-yellow-600'">
+                                🎁
+                            </span>
+                            <span class="font-semibold text-gray-800 group-hover:text-sipilah-green transition">Bagaimana sistem poin reward bekerja?</span>
+                        </div>
+                        <svg class="w-5 h-5 text-gray-400 transition-transform duration-300 flex-shrink-0"
+                             :class="activeAccordion === 2 ? 'rotate-180 text-green-600' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                        </svg>
+                    </button>
+                    <div x-show="activeAccordion === 2" x-collapse x-cloak>
+                        <div class="px-6 pb-5 text-sm text-gray-600 leading-relaxed border-t border-gray-50 pt-4">
+                            Setiap kali Anda menyetor sampah, sistem akan menghitung poin berdasarkan <strong>berat dan jenis sampah</strong> yang disetor. Poin yang terkumpul dapat ditukarkan dengan berbagai reward menarik seperti voucher belanja, produk ramah lingkungan, atau donasi untuk program lingkungan. Semakin banyak sampah yang Anda pilah, semakin besar poin yang Anda dapatkan!
+                        </div>
+                    </div>
+                </div>
+
+                {{-- FAQ 3 --}}
+                <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden transition-all duration-300"
+                     :class="activeAccordion === 3 ? 'ring-2 ring-green-200 shadow-md' : 'hover:shadow-md'">
+                    <button @click="activeAccordion = activeAccordion === 3 ? null : 3"
+                            class="w-full flex items-center justify-between px-6 py-5 text-left focus:outline-none group">
+                        <div class="flex items-center gap-4">
+                            <span class="flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center text-lg"
+                                  :class="activeAccordion === 3 ? 'bg-blue-600 text-white' : 'bg-blue-100 text-blue-600'">
+                                📅
+                            </span>
+                            <span class="font-semibold text-gray-800 group-hover:text-sipilah-green transition">Bagaimana jadwal penjemputan sampah ditentukan?</span>
+                        </div>
+                        <svg class="w-5 h-5 text-gray-400 transition-transform duration-300 flex-shrink-0"
+                             :class="activeAccordion === 3 ? 'rotate-180 text-green-600' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                        </svg>
+                    </button>
+                    <div x-show="activeAccordion === 3" x-collapse x-cloak>
+                        <div class="px-6 pb-5 text-sm text-gray-600 leading-relaxed border-t border-gray-50 pt-4">
+                            Jadwal penjemputan sampah diatur oleh <strong>admin Si-Pilah</strong> berdasarkan wilayah dan ketersediaan petugas. Jadwal yang sudah ditentukan akan muncul secara otomatis di bagian "Jadwal Penjemputan Mendatang" pada dashboard Anda. Anda bisa melihat tanggal, waktu, kategori sampah, dan nama petugas yang bertugas. Pastikan sampah sudah dipilah sebelum waktu penjemputan tiba.
+                        </div>
+                    </div>
+                </div>
+
+                {{-- FAQ 4 --}}
+                <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden transition-all duration-300"
+                     :class="activeAccordion === 4 ? 'ring-2 ring-green-200 shadow-md' : 'hover:shadow-md'">
+                    <button @click="activeAccordion = activeAccordion === 4 ? null : 4"
+                            class="w-full flex items-center justify-between px-6 py-5 text-left focus:outline-none group">
+                        <div class="flex items-center gap-4">
+                            <span class="flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center text-lg"
+                                  :class="activeAccordion === 4 ? 'bg-emerald-600 text-white' : 'bg-emerald-100 text-emerald-600'">
+                                ♻️
+                            </span>
+                            <span class="font-semibold text-gray-800 group-hover:text-sipilah-green transition">Apa saja jenis sampah yang bisa disetor?</span>
+                        </div>
+                        <svg class="w-5 h-5 text-gray-400 transition-transform duration-300 flex-shrink-0"
+                             :class="activeAccordion === 4 ? 'rotate-180 text-green-600' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                        </svg>
+                    </button>
+                    <div x-show="activeAccordion === 4" x-collapse x-cloak>
+                        <div class="px-6 pb-5 text-sm text-gray-600 leading-relaxed border-t border-gray-50 pt-4">
+                            Si-Pilah menerima dua jenis utama sampah: <strong>Organik</strong> (sisa makanan, daun kering, sayuran, buah-buahan busuk) dan <strong>Anorganik</strong> (plastik, kertas, logam, kaca, kardus). Pastikan sampah sudah bersih dan terpisah sebelum disetor agar proses daur ulang berjalan optimal. Sampah B3 (Bahan Berbahaya dan Beracun) seperti baterai dan elektronik memerlukan penanganan khusus.
+                        </div>
+                    </div>
+                </div>
+
+                {{-- FAQ 5 --}}
+                <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden transition-all duration-300"
+                     :class="activeAccordion === 5 ? 'ring-2 ring-green-200 shadow-md' : 'hover:shadow-md'">
+                    <button @click="activeAccordion = activeAccordion === 5 ? null : 5"
+                            class="w-full flex items-center justify-between px-6 py-5 text-left focus:outline-none group">
+                        <div class="flex items-center gap-4">
+                            <span class="flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center text-lg"
+                                  :class="activeAccordion === 5 ? 'bg-amber-500 text-white' : 'bg-amber-100 text-amber-600'">
+                                ⚡
+                            </span>
+                            <span class="font-semibold text-gray-800 group-hover:text-sipilah-green transition">Apa itu kontribusi energi surya dan bagaimana cara menghitungnya?</span>
+                        </div>
+                        <svg class="w-5 h-5 text-gray-400 transition-transform duration-300 flex-shrink-0"
+                             :class="activeAccordion === 5 ? 'rotate-180 text-green-600' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                        </svg>
+                    </button>
+                    <div x-show="activeAccordion === 5" x-collapse x-cloak>
+                        <div class="px-6 pb-5 text-sm text-gray-600 leading-relaxed border-t border-gray-50 pt-4">
+                            Kontribusi energi surya menunjukkan <strong>estimasi energi listrik (dalam kWh)</strong> yang dihasilkan dari proses pengolahan sampah yang Anda setor. Sampah organik diolah menjadi biogas untuk pembangkit listrik, sementara daur ulang sampah anorganik menghemat energi produksi. Angka ini dihitung berdasarkan berat dan jenis sampah yang Anda setorkan, memberikan gambaran nyata dampak positif aksi Anda terhadap lingkungan.
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
     </div>
 
     @include('partials.footer')
