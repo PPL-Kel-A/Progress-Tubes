@@ -100,8 +100,22 @@ class AdminDashboardController extends Controller
             $query->where('type', $request->type);
         }
 
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
         $wastes = $query->paginate(15)->withQueryString();
         return view('admin.wastes', compact('wastes'));
+    }
+
+    public function updateWasteStatus(Request $request, Waste $waste)
+    {
+        $request->validate([
+            'status' => 'required|in:Pending,Diproses,Selesai,Dibatalkan',
+        ]);
+
+        $waste->update(['status' => $request->status]);
+        return back()->with('success', 'Status sampah diperbarui.');
     }
 
     public function deleteWaste(Waste $waste)

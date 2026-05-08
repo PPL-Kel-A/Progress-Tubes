@@ -115,8 +115,12 @@
             {{-- Admin Info --}}
             <div class="px-4 py-4 border-t border-white/10">
                 <div class="flex items-center gap-3 px-3">
-                    <div class="w-9 h-9 rounded-full bg-gradient-to-tr from-green-400 to-emerald-600 flex items-center justify-center font-bold text-sm shadow shrink-0">
-                        {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+                    <div class="w-9 h-9 rounded-full bg-gradient-to-tr from-green-400 to-emerald-600 flex items-center justify-center font-bold text-sm shadow shrink-0 overflow-hidden">
+                        @if(Auth::user()->profile_photo)
+                            <img src="{{ asset('profile-photos/' . Auth::user()->profile_photo) }}" alt="Profile" class="w-9 h-9 rounded-full object-cover">
+                        @else
+                            {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+                        @endif
                     </div>
                     <div class="flex-1 min-w-0">
                         <p class="text-sm font-semibold text-white truncate">{{ Auth::user()->name }}</p>

@@ -83,9 +83,6 @@
         <div class="mt-12">
             {{ $educations->links() }}
         </div>
-
         @include('partials.footer')
-
-
     </div>
 </x-app-layout>

@@ -2,6 +2,11 @@
 <html>
 <head>
 <script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+    #tpsMap { height: 300px; border-radius: 18px; z-index: 0; }
+</style>
 </head>
 
 <body class="bg-gray-100">
@@ -73,45 +78,48 @@
 <!-- TPS -->
 <div>
     <label class="label">Waste Collection Point (TPS) *</label>
-    <select id="tps" name="tps" required class="input" onchange="stepLocation(1)">
+    <select id="tps" name="tps" required class="input" onchange="selectTPS(this.value); stepLocation(1)">
         <option value="">Select TPS</option>
         <option>TPS Kebon Jeruk</option>
         <option>TPS Palmerah</option>
         <option>TPS Grogol</option>
+        <option>TPS Cengkareng</option>
+        <option>TPS Kembangan</option>
+        <option>TPS Slipi</option>
+        <option>TPS Taman Sari</option>
     </select>
 </div>
 
-<!-- DESA -->
-<div id="desaBox" class="hidden">
-    <label class="label">Village (Desa)</label>
-    <select name="desa" required class="input" onchange="stepLocation(2)">
-        <option value="">Select Desa</option>
-        <option>Desa Sukamaju</option>
-        <option>Desa Mekarjaya</option>
-        <option>Desa Harapan</option>
-    </select>
+<!-- MAP PINPOINT -->
+<div>
+    <label class="label">Lokasi TPS di Peta</label>
+    <div id="tpsMap" class="mt-2 border border-gray-200 shadow-sm"></div>
+    <p class="text-xs text-gray-400 mt-2">📍 Pilih TPS di atas untuk melihat lokasinya di peta</p>
 </div>
 
-<!-- KECAMATAN -->
-<div id="kecamatanBox" class="hidden">
-    <label class="label">District (Kecamatan)</label>
-    <select name="kecamatan" required class="input" onchange="stepLocation(3)">
-        <option value="">Select Kecamatan</option>
-        <option>Kecamatan Kebon Jeruk</option>
-        <option>Kecamatan Palmerah</option>
-        <option>Kecamatan Grogol</option>
-    </select>
-</div>
+<!-- LOKASI AUTO-FILL -->
+<div id="locationFields" class="hidden space-y-4">
+    <div class="bg-green-50 border border-green-200 rounded-xl p-4 mb-2">
+        <p class="text-xs font-semibold text-green-700 flex items-center gap-1">✅ Lokasi terisi otomatis dari TPS yang dipilih</p>
+    </div>
 
-<!-- KOTA -->
-<div id="kotaBox" class="hidden">
-    <label class="label">City (Kota)</label>
-    <select name="kota" required class="input">
-        <option value="">Select Kota</option>
-        <option>Jakarta Barat</option>
-        <option>Jakarta Selatan</option>
-        <option>Bandung</option>
-    </select>
+    <!-- DESA -->
+    <div>
+        <label class="label">Village (Desa)</label>
+        <input type="text" id="desaInput" name="desa" required readonly class="input bg-gray-50 cursor-default" placeholder="Otomatis terisi">
+    </div>
+
+    <!-- KECAMATAN -->
+    <div>
+        <label class="label">District (Kecamatan)</label>
+        <input type="text" id="kecamatanInput" name="kecamatan" required readonly class="input bg-gray-50 cursor-default" placeholder="Otomatis terisi">
+    </div>
+
+    <!-- KOTA -->
+    <div>
+        <label class="label">City (Kota)</label>
+        <input type="text" id="kotaInput" name="kota" required readonly class="input bg-gray-50 cursor-default" placeholder="Otomatis terisi">
+    </div>
 </div>
 
 <!-- IMAGE -->
@@ -207,10 +215,115 @@ const resultText = document.getElementById('resultText');
 const form = document.getElementById('form');
 const btn = document.getElementById('btn');
 
+// ── Leaflet Map with TPS Pinpoints ──
+const tpsLocations = {
+    'TPS Kebon Jeruk': {
+        lat: -6.1886, lng: 106.7716,
+        address: 'Jl. Kebon Jeruk Raya, Jakarta Barat',
+        desa: 'Kelurahan Kebon Jeruk',
+        kecamatan: 'Kecamatan Kebon Jeruk',
+        kota: 'Jakarta Barat'
+    },
+    'TPS Palmerah': {
+        lat: -6.2066, lng: 106.7972,
+        address: 'Jl. Palmerah Utara, Jakarta Barat',
+        desa: 'Kelurahan Palmerah',
+        kecamatan: 'Kecamatan Palmerah',
+        kota: 'Jakarta Barat'
+    },
+    'TPS Grogol': {
+        lat: -6.1615, lng: 106.7860,
+        address: 'Jl. Daan Mogot, Grogol, Jakarta Barat',
+        desa: 'Kelurahan Grogol',
+        kecamatan: 'Kecamatan Grogol Petamburan',
+        kota: 'Jakarta Barat'
+    },
+    'TPS Cengkareng': {
+        lat: -6.1457, lng: 106.7295,
+        address: 'Jl. Daan Mogot KM.14, Cengkareng, Jakarta Barat',
+        desa: 'Kelurahan Cengkareng Timur',
+        kecamatan: 'Kecamatan Cengkareng',
+        kota: 'Jakarta Barat'
+    },
+    'TPS Kembangan': {
+        lat: -6.1870, lng: 106.7490,
+        address: 'Jl. Kembangan Raya, Kembangan, Jakarta Barat',
+        desa: 'Kelurahan Kembangan Utara',
+        kecamatan: 'Kecamatan Kembangan',
+        kota: 'Jakarta Barat'
+    },
+    'TPS Slipi': {
+        lat: -6.1920, lng: 106.7985,
+        address: 'Jl. S. Parman, Slipi, Jakarta Barat',
+        desa: 'Kelurahan Slipi',
+        kecamatan: 'Kecamatan Palmerah',
+        kota: 'Jakarta Barat'
+    },
+    'TPS Taman Sari': {
+        lat: -6.1490, lng: 106.8125,
+        address: 'Jl. Taman Sari Raya, Jakarta Barat',
+        desa: 'Kelurahan Taman Sari',
+        kecamatan: 'Kecamatan Taman Sari',
+        kota: 'Jakarta Barat'
+    }
+};
+
+const map = L.map('tpsMap').setView([-6.1750, 106.7750], 12);
+
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; OpenStreetMap contributors',
+    maxZoom: 19
+}).addTo(map);
+
+const markers = {};
+const greenIcon = L.icon({
+    iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
+    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+    shadowSize: [41, 41]
+});
+
+for (const [name, loc] of Object.entries(tpsLocations)) {
+    const marker = L.marker([loc.lat, loc.lng], { icon: greenIcon })
+        .addTo(map)
+        .bindPopup(`<strong>${name}</strong><br><span style="font-size:12px;color:#666">${loc.address}</span>`);
+
+    // Klik marker di peta juga auto-fill
+    marker.on('click', function() {
+        document.getElementById('tps').value = name;
+        fillLocation(name);
+    });
+
+    markers[name] = marker;
+}
+
+function fillLocation(tpsName) {
+    const loc = tpsLocations[tpsName];
+    if (!loc) return;
+
+    // Show location fields & fill
+    document.getElementById('locationFields').classList.remove('hidden');
+    document.getElementById('desaInput').value = loc.desa;
+    document.getElementById('kecamatanInput').value = loc.kecamatan;
+    document.getElementById('kotaInput').value = loc.kota;
+
+    // Trigger form validation check
+    form.dispatchEvent(new Event('input'));
+}
+
+function selectTPS(tpsName) {
+    if (tpsLocations[tpsName]) {
+        const loc = tpsLocations[tpsName];
+        map.flyTo([loc.lat, loc.lng], 16, { duration: 1 });
+        markers[tpsName].openPopup();
+        fillLocation(tpsName);
+    }
+}
+
 function stepLocation(step) {
-    if(step >= 1) document.getElementById('desaBox').classList.remove('hidden');
-    if(step >= 2) document.getElementById('kecamatanBox').classList.remove('hidden');
-    if(step >= 3) document.getElementById('kotaBox').classList.remove('hidden');
+    // No longer needed for progressive reveal, kept for compatibility
 }
 
 weight.addEventListener('input', () => {
