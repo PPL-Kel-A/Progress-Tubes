@@ -13,6 +13,8 @@ use App\Models\Reward;
 use App\Models\Schedule;
 use App\Models\Announcement;
 use App\Models\Education;
+use App\Models\AboutSetting;
+use App\Models\ContactMessage;
 
 class AdminDashboardController extends Controller
 {
@@ -100,8 +102,22 @@ class AdminDashboardController extends Controller
             $query->where('type', $request->type);
         }
 
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
         $wastes = $query->paginate(15)->withQueryString();
         return view('admin.wastes', compact('wastes'));
+    }
+
+    public function updateWasteStatus(Request $request, Waste $waste)
+    {
+        $request->validate([
+            'status' => 'required|in:Pending,Diproses,Selesai,Dibatalkan',
+        ]);
+
+        $waste->update(['status' => $request->status]);
+        return back()->with('success', 'Status sampah diperbarui.');
     }
 
     public function deleteWaste(Waste $waste)
@@ -345,5 +361,178 @@ class AdminDashboardController extends Controller
 
         return redirect()->route('admin.educations')
             ->with('success', 'Artikel diupdate.');
+    }
+    // ==================== ABOUT PAGE ====================
+
+    public function aboutPage()
+    {
+        $settings = AboutSetting::all()->groupBy('section')->map(function ($items) {
+            return $items->pluck('value', 'key')->toArray();
+        });
+
+        return view('admin.about', [
+            'hero'     => $settings->get('hero', []),
+            'visi'     => $settings->get('visi', []),
+            'strategi' => $settings->get('strategi', []),
+            'sejarah'  => $settings->get('sejarah', []),
+            'team'     => $settings->get('team', []),
+            'layanan'  => $settings->get('layanan', []),
+        ]);
+    }
+
+    public function updateAbout(Request $request)
+    {
+        $section = $request->input('section');
+
+        // Process text fields: collect all inputs starting with section prefix
+        $fields = collect($request->all())->filter(function ($value, $key) use ($section) {
+            return str_starts_with($key, $section . '_') && !is_null($value) && $key !== '_token' && $key !== 'section';
+        });
+
+        foreach ($fields as $inputKey => $value) {
+            // Convert "hero_badge" -> key = "badge"
+            $key = str_replace($section . '_', '', $inputKey);
+
+            // Skip file inputs (handled separately)
+            if ($request->hasFile($inputKey)) continue;
+
+            AboutSetting::updateOrCreate(
+                ['section' => $section, 'key' => $key],
+                ['value' => $value]
+            );
+        }
+
+        // Process image uploads
+        $imageDir = public_path('images/about');
+        if (!file_exists($imageDir)) {
+            mkdir($imageDir, 0755, true);
+        }
+
+        foreach ($request->allFiles() as $inputKey => $file) {
+            $key = str_replace($section . '_', '', $inputKey);
+
+            $request->validate([
+                $inputKey => 'image|mimes:jpg,jpeg,png,webp|max:2048',
+            ]);
+
+            // Delete old image if exists
+            $oldImage = AboutSetting::getImage($section, $key);
+            if ($oldImage && file_exists(public_path('images/about/' . $oldImage))) {
+                unlink(public_path('images/about/' . $oldImage));
+            }
+
+            // Save new image
+            $filename = $section . '_' . $key . '_' . time() . '.' . $file->getClientOriginalExtension();
+            $file->move($imageDir, $filename);
+
+            AboutSetting::updateOrCreate(
+                ['section' => $section, 'key' => $key],
+                ['image' => $filename]
+            );
+        }
+
+        return back()->with('success', 'Konten About section "' . ucfirst($section) . '" berhasil diperbarui.');
+    }
+
+    // ==================== CONTACT PAGE ====================
+
+    public function contactPage()
+    {
+        $settings = AboutSetting::where('section', 'like', 'contact_%')
+            ->get()
+            ->groupBy('section')
+            ->map(function ($items) {
+                return $items->pluck('value', 'key')->toArray();
+            });
+
+        return view('admin.contact', [
+            'hero'   => $settings->get('contact_hero', []),
+            'info'   => $settings->get('contact_info', []),
+            'sosmed' => $settings->get('contact_sosmed', []),
+        ]);
+    }
+
+    public function updateContact(Request $request)
+    {
+        $section = $request->input('section');
+
+        // Process text fields
+        $fields = collect($request->all())->filter(function ($value, $key) use ($section) {
+            return str_starts_with($key, $section . '_') && !is_null($value) && $key !== '_token' && $key !== 'section';
+        });
+
+        foreach ($fields as $inputKey => $value) {
+            $key = str_replace($section . '_', '', $inputKey);
+
+            AboutSetting::updateOrCreate(
+                ['section' => $section, 'key' => $key],
+                ['value' => $value]
+            );
+        }
+
+        $sectionLabel = str_replace('contact_', '', $section);
+        return back()->with('success', 'Konten Contact section "' . ucfirst($sectionLabel) . '" berhasil diperbarui.');
+    }
+
+    // ==================== CONTACT MESSAGES ====================
+
+    public function contactMessages(Request $request)
+    {
+        $query = ContactMessage::latest();
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%")
+                  ->orWhere('subject', 'like', "%{$search}%");
+            });
+        }
+
+        $messages = $query->paginate(15)->withQueryString();
+        $unreadCount = ContactMessage::unread()->count();
+
+        return view('admin.contact-messages', compact('messages', 'unreadCount'));
+    }
+
+    public function replyContactMessage(Request $request, ContactMessage $contactMessage)
+    {
+        $request->validate([
+            'admin_reply' => 'required|string|max:5000',
+        ]);
+
+        $contactMessage->update([
+            'admin_reply' => $request->admin_reply,
+            'status'      => 'Dibalas',
+            'replied_at'  => now(),
+        ]);
+
+        // Create a notification (Announcement-style) for the user if they have an account
+        if ($contactMessage->user_id) {
+            Announcement::create([
+                'user_id' => $contactMessage->user_id,
+                'konten'  => '📩 Balasan untuk pesan "' . $contactMessage->subject . '": ' . $request->admin_reply,
+            ]);
+        }
+
+        return back()->with('success', 'Balasan berhasil dikirim ke ' . $contactMessage->name . '.');
+    }
+
+    public function markAsRead(ContactMessage $contactMessage)
+    {
+        if ($contactMessage->status === 'Baru') {
+            $contactMessage->update(['status' => 'Dibaca']);
+        }
+        return back()->with('success', 'Pesan ditandai sebagai dibaca.');
+    }
+
+    public function deleteContactMessage(ContactMessage $contactMessage)
+    {
+        $contactMessage->delete();
+        return back()->with('success', 'Pesan berhasil dihapus.');
     }
 }

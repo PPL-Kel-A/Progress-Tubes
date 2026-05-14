@@ -1,5 +1,8 @@
 <!DOCTYPE html>
 <html lang="id">
+@php
+    $unreadContactMessages = \App\Models\ContactMessage::unread()->count();
+@endphp
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -109,14 +112,41 @@
                         <span class="text-lg w-6 text-center">📚</span>
                         <span>Edukasi</span>
                     </a>
+
+                    <a href="{{ route('admin.about') }}" 
+                       class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 {{ request()->routeIs('admin.about') ? 'bg-white/20 text-white font-semibold shadow-sm' : 'text-green-100/70 hover:bg-white/10' }}">
+                        <span class="text-lg w-6 text-center">ℹ️</span>
+                        <span>Halaman About</span>
+                    </a>
+
+                    <a href="{{ route('admin.contact') }}" 
+                       class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 {{ request()->routeIs('admin.contact') ? 'bg-white/20 text-white font-semibold shadow-sm' : 'text-green-100/70 hover:bg-white/10' }}">
+                        <span class="text-lg w-6 text-center">📞</span>
+                        <span>Halaman Contact</span>
+                    </a>
+
+                    <a href="{{ route('admin.contact.messages') }}" 
+                       class="flex items-center justify-between px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 {{ request()->routeIs('admin.contact.messages') ? 'bg-white/20 text-white font-semibold shadow-sm' : 'text-green-100/70 hover:bg-white/10' }}">
+                        <div class="flex items-center gap-3">
+                            <span class="text-lg w-6 text-center">📨</span>
+                            <span>Pesan Masuk</span>
+                        </div>
+                        @if($unreadContactMessages > 0)
+                            <span class="bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">{{ $unreadContactMessages }}</span>
+                        @endif
+                    </a>
                 </div>
             </nav>
 
             {{-- Admin Info --}}
             <div class="px-4 py-4 border-t border-white/10">
                 <div class="flex items-center gap-3 px-3">
-                    <div class="w-9 h-9 rounded-full bg-gradient-to-tr from-green-400 to-emerald-600 flex items-center justify-center font-bold text-sm shadow shrink-0">
-                        {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+                    <div class="w-9 h-9 rounded-full bg-gradient-to-tr from-green-400 to-emerald-600 flex items-center justify-center font-bold text-sm shadow shrink-0 overflow-hidden">
+                        @if(Auth::user()->profile_photo)
+                            <img src="{{ asset('profile-photos/' . Auth::user()->profile_photo) }}" alt="Profile" class="w-9 h-9 rounded-full object-cover">
+                        @else
+                            {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+                        @endif
                     </div>
                     <div class="flex-1 min-w-0">
                         <p class="text-sm font-semibold text-white truncate">{{ Auth::user()->name }}</p>
@@ -173,6 +203,12 @@
                     <a href="{{ route('admin.schedules') }}" class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 {{ request()->routeIs('admin.schedules') ? 'bg-white/20 text-white font-semibold' : 'text-green-100/70 hover:bg-white/10' }}"><span class="text-lg w-6 text-center">📅</span><span>Jadwal</span></a>
                     <a href="{{ route('admin.announcements') }}" class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 {{ request()->routeIs('admin.announcements') ? 'bg-white/20 text-white font-semibold' : 'text-green-100/70 hover:bg-white/10' }}"><span class="text-lg w-6 text-center">📢</span><span>Pengumuman</span></a>
                     <a href="{{ route('admin.educations') }}" class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 {{ request()->routeIs('admin.educations') ? 'bg-white/20 text-white font-semibold' : 'text-green-100/70 hover:bg-white/10' }}"><span class="text-lg w-6 text-center">📚</span><span>Edukasi</span></a>
+                    <a href="{{ route('admin.about') }}" class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 {{ request()->routeIs('admin.about') ? 'bg-white/20 text-white font-semibold' : 'text-green-100/70 hover:bg-white/10' }}"><span class="text-lg w-6 text-center">ℹ️</span><span>Halaman About</span></a>
+                    <a href="{{ route('admin.contact') }}" class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 {{ request()->routeIs('admin.contact') ? 'bg-white/20 text-white font-semibold' : 'text-green-100/70 hover:bg-white/10' }}"><span class="text-lg w-6 text-center">📞</span><span>Halaman Contact</span></a>
+                    <a href="{{ route('admin.contact.messages') }}" class="flex items-center justify-between px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 {{ request()->routeIs('admin.contact.messages') ? 'bg-white/20 text-white font-semibold' : 'text-green-100/70 hover:bg-white/10' }}">
+                        <div class="flex items-center gap-3"><span class="text-lg w-6 text-center">📨</span><span>Pesan Masuk</span></div>
+                        @if($unreadContactMessages > 0)<span class="bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">{{ $unreadContactMessages }}</span>@endif
+                    </a>
                 </div>
             </nav>
         </aside>

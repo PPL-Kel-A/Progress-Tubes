@@ -24,10 +24,8 @@
             </div>
 
             <a href="#" class="hover:text-green-600 transition">Reward</a>
-            <a href="#" class="hover:text-green-600 transition">About</a>
-            <a href="#" class="hover:text-green-600 transition">Contact</a>
-            <!-- <a href="{{ route('about') }}" class="hover:text-green-600 transition">About</a>
-            <a href="{{ route('contact') }}" class="hover:text-green-600 transition">Contact</a> -->
+            <a href="{{ route('about') }}" class="hover:text-green-600 transition {{ request()->routeIs('about') ? 'text-green-600 border-b-2 border-green-600 pb-1' : '' }}">About</a>
+            <a href="{{ route('contact') }}" class="hover:text-green-600 transition {{ request()->routeIs('contact') ? 'text-green-600 border-b-2 border-green-600 pb-1' : '' }}">Contact</a>
         </div>
 
         <div class="flex items-center space-x-3">
@@ -47,7 +45,9 @@
 
                 {{-- Notification Bell --}}
                 @php
-                    $unreadCount = \App\Models\Announcement::where('created_at', '>=', now()->subDays(3))->count();
+                    $unreadCount = \App\Models\Announcement::where(function($q) {
+                        $q->whereNull('user_id')->orWhere('user_id', auth()->id());
+                    })->where('created_at', '>=', now()->subDays(3))->count();
                 @endphp
                 <a href="{{ route('announcements.index') }}" class="relative p-2 rounded-xl hover:bg-green-50 transition group" title="Pengumuman">
                     <svg class="w-5 h-5 text-gray-500 group-hover:text-green-700 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
@@ -62,9 +62,13 @@
                 <div class="flex items-center" x-data="{ openProfile: false }">
                     <div class="relative">
                         <button @click="openProfile = !openProfile" class="rounded-full bg-gradient-to-tr from-green-400 to-[#1b5e20] p-[2.5px] hover:scale-105 transition-transform duration-300 shadow-sm focus:outline-none">
-                            <span class="h-full w-full flex items-center justify-center rounded-full bg-white text-[#1b5e20] font-extrabold text-lg px-3 py-1">
-                                {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
-                            </span>
+                            @if(Auth::user()->profile_photo)
+                                <img src="{{ asset('profile-photos/' . Auth::user()->profile_photo) }}" alt="Profile" class="h-9 w-9 rounded-full object-cover">
+                            @else
+                                <span class="h-full w-full flex items-center justify-center rounded-full bg-white text-[#1b5e20] font-extrabold text-lg px-3 py-1">
+                                    {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+                                </span>
+                            @endif
                         </button>
                         <div x-show="openProfile" x-transition @click.away="openProfile = false"
                             class="absolute right-0 mt-2 w-44 bg-white border rounded-lg shadow-lg z-50"

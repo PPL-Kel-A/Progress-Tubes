@@ -32,7 +32,10 @@ class DashboardController extends Controller
                                   ->first();
 
         
-        $pengumumanTerbaru = Announcement::latest()->first();
+        $pengumumanTerbaru = Announcement::whereNull('user_id')
+                                         ->orWhere('user_id', $userId)
+                                         ->latest()
+                                         ->first();
 
         $data = [
             // Data per-user (filter by user_id)
@@ -69,7 +72,11 @@ class DashboardController extends Controller
 
     public function announcements()
     {
-        $announcements = Announcement::latest()->paginate(10);
+        $userId = Auth::id();
+        $announcements = Announcement::whereNull('user_id')
+                                     ->orWhere('user_id', $userId)
+                                     ->latest()
+                                     ->paginate(10);
         return view('user.announcements', compact('announcements'));
     }
 }
