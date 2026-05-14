@@ -7,6 +7,7 @@ use App\Http\Controllers\ReportController;
 use App\Http\Controllers\WasteController;
 use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\EducationController;
+use App\Http\Controllers\ContactMessageController;
 
 // ==================== HOME ====================
 Route::get('/', function () {
@@ -58,8 +59,37 @@ Route::middleware('auth')->group(function () {
 });
 
 // ==================== PUBLIC ====================
-Route::get('/about', fn () => view('pages.about'))->name('about');
-Route::get('/contact', fn () => view('pages.contact'))->name('contact');
+Route::get('/about', function () {
+    $settings = \App\Models\AboutSetting::all()->groupBy('section')->map(function ($items) {
+        return $items->pluck('value', 'key')->toArray();
+    });
+    $images = \App\Models\AboutSetting::whereNotNull('image')->get()->groupBy('section')->map(function ($items) {
+        return $items->pluck('image', 'key')->toArray();
+    });
+    return view('pages.about', [
+        'hero'     => $settings->get('hero', []),
+        'visi'     => $settings->get('visi', []),
+        'strategi' => $settings->get('strategi', []),
+        'sejarah'  => $settings->get('sejarah', []),
+        'team'     => $settings->get('team', []),
+        'layanan'  => $settings->get('layanan', []),
+        'images'   => $images,
+    ]);
+})->name('about');
+Route::get('/contact', function () {
+    $settings = \App\Models\AboutSetting::where('section', 'like', 'contact_%')
+        ->get()
+        ->groupBy('section')
+        ->map(function ($items) {
+            return $items->pluck('value', 'key')->toArray();
+        });
+    return view('pages.contact', [
+        'hero'   => $settings->get('contact_hero', []),
+        'info'   => $settings->get('contact_info', []),
+        'sosmed' => $settings->get('contact_sosmed', []),
+    ]);
+})->name('contact');
+Route::post('/contact', [ContactMessageController::class, 'store'])->name('contact.send');
 
 // ==================== EDUCATION USER ====================
 Route::get('/education', [EducationController::class, 'index'])->name('education.index');
@@ -120,6 +150,20 @@ Route::middleware(['auth', 'is_admin'])
 
     // UPDATE
     Route::put('/educations/{education}', [AdminDashboardController::class, 'update'])->name('educations.update');
+
+    // ==================== ABOUT PAGE ====================
+    Route::get('/about', [AdminDashboardController::class, 'aboutPage'])->name('about');
+    Route::post('/about', [AdminDashboardController::class, 'updateAbout'])->name('about.update');
+
+    // ==================== CONTACT PAGE ====================
+    Route::get('/contact', [AdminDashboardController::class, 'contactPage'])->name('contact');
+    Route::post('/contact', [AdminDashboardController::class, 'updateContact'])->name('contact.update');
+
+    // ==================== CONTACT MESSAGES ====================
+    Route::get('/contact-messages', [AdminDashboardController::class, 'contactMessages'])->name('contact.messages');
+    Route::post('/contact-messages/{contactMessage}/reply', [AdminDashboardController::class, 'replyContactMessage'])->name('contact.messages.reply');
+    Route::delete('/contact-messages/{contactMessage}', [AdminDashboardController::class, 'deleteContactMessage'])->name('contact.messages.delete');
+    Route::patch('/contact-messages/{contactMessage}/read', [AdminDashboardController::class, 'markAsRead'])->name('contact.messages.read');
 
 });
 
