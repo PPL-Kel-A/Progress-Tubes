@@ -13,7 +13,7 @@
         .text-sipilah-green { color: #1b5e20; }
     </style>
 </head>
-<body class="bg-gray-50 text-gray-800">
+<body class="bg-gray-50 text-gray-800" x-data="{ showFeedback: false, feedbackWasteId: null, rating: 0, hoverRating: 0 }">
 
     @include('partials.navbar', ['variant' => 'dashboard'])
 
@@ -86,6 +86,8 @@
                                 <th class="px-5 py-3 text-left">Hasil (L)</th>
                                 <th class="px-5 py-3 text-left">TPS</th>
                                 <th class="px-5 py-3 text-left">Tanggal</th>
+                                <th class="px-5 py-3 text-left">Status</th>
+                                <th class="px-5 py-3 text-center">Aksi</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-50">
@@ -101,6 +103,36 @@
                                 <td class="px-5 py-3 text-gray-600">{{ number_format($waste->result, 2) }}</td>
                                 <td class="px-5 py-3 text-gray-500 text-xs max-w-[150px] truncate" title="{{ $waste->tps }}">{{ $waste->tps }}</td>
                                 <td class="px-5 py-3 text-gray-400 text-xs">{{ $waste->created_at->format('d/m/Y H:i') }}</td>
+                                <td class="px-5 py-3">
+                                    @php
+                                        $statusColors = [
+                                            'Pending'    => 'bg-yellow-100 text-yellow-700',
+                                            'Diproses'   => 'bg-blue-100 text-blue-700',
+                                            'Selesai'    => 'bg-green-100 text-green-700',
+                                            'Dibatalkan' => 'bg-red-100 text-red-700',
+                                        ];
+                                        $color = $statusColors[$waste->status] ?? 'bg-gray-100 text-gray-600';
+                                    @endphp
+                                    <span class="px-2.5 py-1 rounded-full text-xs font-bold {{ $color }}">
+                                        {{ $waste->status ?? 'Pending' }}
+                                    </span>
+                                </td>
+                                <td class="px-5 py-3 text-center">
+                                    @if(($waste->status ?? 'Pending') === 'Selesai')
+                                        @php
+                                            $hasReviewed = \App\Models\Review::where('waste_id', $waste->id)->exists();
+                                        @endphp
+                                        @if(!$hasReviewed)
+                                            <button @click="showFeedback = true; feedbackWasteId = {{ $waste->id }}; rating = 0;" class="text-xs bg-green-50 text-green-600 px-3 py-1.5 rounded-lg font-semibold hover:bg-green-100 transition whitespace-nowrap">
+                                                Beri Ulasan
+                                            </button>
+                                        @else
+                                            <span class="text-xs text-gray-400 whitespace-nowrap">Sudah Diulas</span>
+                                        @endif
+                                    @else
+                                        <span class="text-xs text-gray-400">-</span>
+                                    @endif
+                                </td>
                             </tr>
                             @endforeach
                         </tbody>
@@ -353,6 +385,61 @@
     </div>
 
     @include('partials.footer')
+
+    <!-- FEEDBACK MODAL OVERLAY -->
+    <div x-show="showFeedback" style="display: none;" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60 px-4" x-transition.opacity>
+        <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl overflow-hidden" x-show="showFeedback" x-transition.scale.origin.bottom @click.away="showFeedback = false">
+            <!-- Modal Header -->
+            <div class="bg-gradient-to-r from-green-500 to-green-600 p-6 text-center text-white relative">
+                <div class="w-16 h-16 bg-white bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-3">
+                    <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                </div>
+                <h2 class="text-2xl font-bold">Rate Your Experience</h2>
+                <p class="text-sm text-green-100 mt-1">Help us improve Si-Pilah</p>
+            </div>
+
+            <!-- Modal Body -->
+            <div class="p-6">
+                <form action="{{ route('reviews.store') }}" method="POST">
+                    @csrf
+                    <input type="hidden" name="waste_id" :value="feedbackWasteId">
+                    <input type="hidden" name="rating" x-model="rating">
+
+                    <!-- Star Rating -->
+                    <div class="flex justify-center space-x-2 mb-6">
+                        <template x-for="star in 5">
+                            <button type="button" class="focus:outline-none transition-transform hover:scale-110"
+                                    @click="rating = star"
+                                    @mouseover="hoverRating = star"
+                                    @mouseleave="hoverRating = 0">
+                                <svg class="w-10 h-10 transition-colors" 
+                                     :class="(hoverRating >= star || rating >= star) ? 'text-yellow-400' : 'text-gray-300'"
+                                     fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                                </svg>
+                            </button>
+                        </template>
+                    </div>
+
+                    <!-- Comment Area -->
+                    <div class="mb-6">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Any comments? (Optional)</label>
+                        <textarea name="comment" rows="3" class="w-full border border-gray-300 rounded-xl p-3 focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none resize-none transition" placeholder="Tell us about your experience..."></textarea>
+                    </div>
+
+                    <!-- Buttons -->
+                    <div class="flex flex-col space-y-3">
+                        <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-xl shadow-sm transition disabled:opacity-50 disabled:cursor-not-allowed" :disabled="rating === 0">
+                            Submit Review
+                        </button>
+                        <button type="button" @click="showFeedback = false" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-600 font-bold py-3 rounded-xl transition">
+                            Batal
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 
 </body>
 </html>

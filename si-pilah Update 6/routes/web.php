@@ -8,6 +8,7 @@ use App\Http\Controllers\WasteController;
 use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\EducationController;
 use App\Http\Controllers\ContactMessageController;
+use App\Http\Controllers\ReviewController;
 
 // ==================== HOME ====================
 Route::get('/', function () {
@@ -17,7 +18,13 @@ Route::get('/', function () {
         $beritaTerkini = [];
     }
 
-    return view('welcome', compact('beritaTerkini'));
+    try {
+        $reviews = \App\Models\Review::with('user')->where('is_visible', true)->latest()->get();
+    } catch (\Exception $e) {
+        $reviews = [];
+    }
+
+    return view('welcome', compact('beritaTerkini', 'reviews'));
 });
 
 // ==================== DASHBOARD ====================
@@ -56,6 +63,9 @@ Route::middleware('auth')->group(function () {
 
     // Announcements (user-facing)
     Route::get('/announcements', [DashboardController::class, 'announcements'])->name('announcements.index');
+
+    // Reviews
+    Route::post('/reviews', [ReviewController::class, 'store'])->name('reviews.store');
 });
 
 // ==================== PUBLIC ====================
@@ -164,6 +174,10 @@ Route::middleware(['auth', 'is_admin'])
     Route::post('/contact-messages/{contactMessage}/reply', [AdminDashboardController::class, 'replyContactMessage'])->name('contact.messages.reply');
     Route::delete('/contact-messages/{contactMessage}', [AdminDashboardController::class, 'deleteContactMessage'])->name('contact.messages.delete');
     Route::patch('/contact-messages/{contactMessage}/read', [AdminDashboardController::class, 'markAsRead'])->name('contact.messages.read');
+
+    // ==================== REVIEWS ====================
+    Route::get('/reviews', [AdminDashboardController::class, 'reviews'])->name('reviews');
+    Route::put('/reviews/{review}/toggle-visibility', [AdminDashboardController::class, 'toggleReviewVisibility'])->name('reviews.toggle');
 
 });
 

@@ -107,7 +107,7 @@ class WasteController extends Controller
         // =========================
         // SIMPAN DATABASE
         // =========================
-        Waste::create([
+        $waste = Waste::create([
             'user_id' => auth()->id(),
             'name' => $validated['name'],
             'type' => $validated['type'],
@@ -122,17 +122,18 @@ class WasteController extends Controller
         // REDIRECT SUCCESS
         // =========================
         return redirect('/waste/success')->with([
-        'name' => $validated['name'],
-        'type' => $validated['type'],
-        'category' => $validated['category'],
-        'weight' => $validated['weight'],
-        'tps' => $validated['tps'],
-        'desa' => $validated['desa'],
-        'kecamatan' => $validated['kecamatan'],
-        'kota' => $validated['kota'],
-        'image' => $newPath,
-        'result' => $result,
-        'submission_id' => $submissionId
+            'waste_id' => $waste->id,
+            'name' => $validated['name'],
+            'type' => $validated['type'],
+            'category' => $validated['category'],
+            'weight' => $validated['weight'],
+            'tps' => $validated['tps'],
+            'desa' => $validated['desa'],
+            'kecamatan' => $validated['kecamatan'],
+            'kota' => $validated['kota'],
+            'image' => $newPath,
+            'result' => $result,
+            'submission_id' => $submissionId
         ]);
     }
 
