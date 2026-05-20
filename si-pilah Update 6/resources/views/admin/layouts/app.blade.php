@@ -135,6 +135,12 @@
                             <span class="bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">{{ $unreadContactMessages }}</span>
                         @endif
                     </a>
+
+                    <a href="{{ route('admin.reviews') }}" 
+                       class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 {{ request()->routeIs('admin.reviews') ? 'bg-white/20 text-white font-semibold shadow-sm' : 'text-green-100/70 hover:bg-white/10' }}">
+                        <span class="text-lg w-6 text-center">⭐</span>
+                        <span>Feedback</span>
+                    </a>
                 </div>
             </nav>
 
@@ -209,6 +215,7 @@
                         <div class="flex items-center gap-3"><span class="text-lg w-6 text-center">📨</span><span>Pesan Masuk</span></div>
                         @if($unreadContactMessages > 0)<span class="bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">{{ $unreadContactMessages }}</span>@endif
                     </a>
+                    <a href="{{ route('admin.reviews') }}" class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 {{ request()->routeIs('admin.reviews') ? 'bg-white/20 text-white font-semibold' : 'text-green-100/70 hover:bg-white/10' }}"><span class="text-lg w-6 text-center">⭐</span><span>Feedback</span></a>
                 </div>
             </nav>
         </aside>

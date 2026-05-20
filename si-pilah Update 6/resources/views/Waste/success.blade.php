@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Submission Success</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="//unpkg.com/alpinejs" defer></script>
 </head>
 
 @php
@@ -17,11 +18,12 @@
     $kecamatan = session('kecamatan', '-');
     $kota = session('kota', '-');
     $result = session('result', 0);
+    $waste_id = session('waste_id', null);
 @endphp
 
-<body class="bg-gray-100 min-h-screen flex items-center justify-center">
+<body class="bg-gray-100 min-h-screen flex items-center justify-center relative">
 
-<div class="w-full max-w-xl px-4">
+<div class="w-full max-w-xl px-4 z-10">
 
     <!-- ICON -->
     <div class="flex justify-center mb-6">
@@ -103,11 +105,13 @@
 
     <!-- BUTTON -->
     <a href="/dashboard"
-       class="block w-full bg-green-600 hover:bg-green-700 text-white text-center py-4 rounded-2xl font-bold shadow">
+       class="block w-full bg-green-600 hover:bg-green-700 text-white text-center py-4 rounded-2xl font-bold shadow transition">
         Back to Dashboard
     </a>
 
 </div>
+
+
 
 </body>
 </html>

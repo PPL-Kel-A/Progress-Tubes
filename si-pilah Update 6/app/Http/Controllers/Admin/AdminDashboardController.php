@@ -15,6 +15,7 @@ use App\Models\Announcement;
 use App\Models\Education;
 use App\Models\AboutSetting;
 use App\Models\ContactMessage;
+use App\Models\Review;
 
 class AdminDashboardController extends Controller
 {
@@ -534,5 +535,20 @@ class AdminDashboardController extends Controller
     {
         $contactMessage->delete();
         return back()->with('success', 'Pesan berhasil dihapus.');
+    }
+
+    // ==================== REVIEWS ====================
+
+    public function reviews(Request $request)
+    {
+        $reviews = Review::with('user', 'waste')->latest()->paginate(15);
+        return view('admin.reviews', compact('reviews'));
+    }
+
+    public function toggleReviewVisibility(Review $review)
+    {
+        $review->update(['is_visible' => !$review->is_visible]);
+        $status = $review->is_visible ? 'ditampilkan' : 'disembunyikan';
+        return back()->with('success', "Feedback berhasil {$status} di Halaman Utama.");
     }
 }
