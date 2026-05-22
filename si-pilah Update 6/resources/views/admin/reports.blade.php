@@ -52,15 +52,21 @@
                     </td>
                     <td class="px-6 py-3 text-gray-400 text-xs">{{ $report->created_at->format('d/m/Y H:i') }}</td>
                     <td class="px-6 py-3 text-center">
-                        <form method="POST" action="{{ route('admin.reports.status', $report) }}" class="flex items-center justify-center gap-2">
-                            @csrf @method('PUT')
-                            <select name="status" class="border border-gray-200 rounded-lg px-2 py-1.5 text-xs focus:ring-2 focus:ring-sipilah-500 focus:border-transparent outline-none">
-                                @foreach(['Menunggu', 'Diproses', 'Selesai', 'Dibatalkan'] as $s)
-                                    <option value="{{ $s }}" {{ $report->status === $s ? 'selected' : '' }}>{{ $s }}</option>
-                                @endforeach
-                            </select>
-                            <button type="submit" class="bg-sipilah-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-sipilah-800 transition">Update</button>
-                        </form>
+                        <div class="flex items-center justify-center gap-2">
+                            <a href="{{ route('admin.reports.feedback.form', $report->id) }}" class="bg-blue-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-blue-700 transition" title="Tindak Lanjut">
+                                📋
+                            </a>
+                            
+                            <form method="POST" action="{{ route('admin.reports.status', $report) }}" class="flex items-center gap-2 contents">
+                                @csrf @method('PUT')
+                                <select name="status" class="border border-gray-200 rounded-lg px-2 py-1.5 text-xs focus:ring-2 focus:ring-sipilah-500 focus:border-transparent outline-none">
+                                    @foreach(['Menunggu', 'Diproses', 'Selesai', 'Dibatalkan'] as $s)
+                                        <option value="{{ $s }}" {{ $report->status === $s ? 'selected' : '' }}>{{ $s }}</option>
+                                    @endforeach
+                                </select>
+                                <button type="submit" class="bg-sipilah-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-sipilah-800 transition">Update</button>
+                            </form>
+                        </div>
                     </td>
                 </tr>
                 @empty

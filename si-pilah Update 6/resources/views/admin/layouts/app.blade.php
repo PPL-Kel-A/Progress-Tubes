@@ -274,7 +274,9 @@
 
             {{-- Page Content --}}
             <main class="p-6">
-                @yield('content')
+                <div class="max-w-7xl mx-auto">
+                    @yield('content')
+                </div>
             </main>
         </div>
     </div>

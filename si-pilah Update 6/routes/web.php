@@ -60,6 +60,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
     Route::get('/reports/create', [ReportController::class, 'create'])->name('reports.create');
     Route::post('/reports', [ReportController::class, 'store'])->name('reports.store');
+    Route::get('/reports/{id}/edit', [ReportController::class, 'edit'])->name('reports.edit');
+    Route::put('/reports/{id}', [ReportController::class, 'update'])->name('reports.update');
+    Route::delete('/reports/{id}', [ReportController::class, 'destroy'])->name('reports.destroy');
 
     // Announcements (user-facing)
     Route::get('/announcements', [DashboardController::class, 'announcements'])->name('announcements.index');
@@ -126,6 +129,11 @@ Route::middleware(['auth', 'is_admin'])
     // Reports
     Route::get('/reports', [AdminDashboardController::class, 'reports'])->name('reports');
     Route::put('/reports/{report}/status', [AdminDashboardController::class, 'updateReportStatus'])->name('reports.status');
+    
+    // Report Feedbacks
+    Route::get('/reports/{report}/feedback', [AdminDashboardController::class, 'showReportFeedbackForm'])->name('reports.feedback.form');
+    Route::post('/reports/{report}/feedback', [AdminDashboardController::class, 'storeReportFeedback'])->name('reports.feedback.store');
+    Route::delete('/report-feedbacks/{feedback}', [AdminDashboardController::class, 'deleteReportFeedback'])->name('reports.feedback.delete');
 
     // Rewards
     Route::get('/rewards', [AdminDashboardController::class, 'rewards'])->name('rewards');

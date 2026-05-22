@@ -16,6 +16,9 @@ use App\Models\Education;
 use App\Models\AboutSetting;
 use App\Models\ContactMessage;
 use App\Models\Review;
+use App\Models\ReportFeedback;
+use App\Services\RewardPointService;
+use App\Services\FeedbackService;
 
 class AdminDashboardController extends Controller
 {
@@ -156,7 +159,57 @@ class AdminDashboardController extends Controller
         ]);
 
         $report->update(['status' => $request->status]);
+
+        // Award points if status changed to "Selesai"
+        if ($request->status === 'Selesai') {
+            $rewardService = new RewardPointService();
+            $rewardService->awardPointsForCompletedReport($report);
+        }
+
         return back()->with('success', 'Status diperbarui.');
+    }
+
+    // ==================== REPORT FEEDBACKS ====================
+
+    public function showReportFeedbackForm($report_id)
+    {
+        $report = Report::findOrFail($report_id);
+        return view('admin.reports.feedback-form-page', compact('report'));
+    }
+
+    public function storeReportFeedback(Request $request, Report $report)
+    {
+        $request->validate([
+            'description' => 'required|string',
+            'photo'       => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+        ]);
+
+        $feedbackService = new FeedbackService();
+
+        // Check if feedback already exists
+        if ($report->feedback) {
+            // Update existing feedback
+            $feedbackService->updateFeedback($report->feedback, $request->only('description', 'photo'));
+            $message = '✅ Feedback laporan berhasil diperbarui!';
+        } else {
+            // Create new feedback
+            $feedbackService->createFeedback(
+                $report,
+                $request->only('description', 'photo'),
+                Auth::id()
+            );
+            $message = '✅ Feedback laporan berhasil ditambahkan!';
+        }
+
+        return redirect()->route('admin.reports')->with('success', $message);
+    }
+
+    public function deleteReportFeedback(ReportFeedback $feedback)
+    {
+        $feedbackService = new FeedbackService();
+        $feedbackService->deleteFeedback($feedback);
+
+        return back()->with('success', '✅ Feedback laporan berhasil dihapus!');
     }
 
     // ==================== REWARDS ====================
