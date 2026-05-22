@@ -25,6 +25,10 @@
 
 <body class="bg-gray-50 text-gray-800">
 
+@php
+    use Illuminate\Support\Facades\Storage;
+@endphp
+
 @include('partials.navbar', ['variant' => 'dashboard'])
 
 <div class="w-full px-6 md:px-10 lg:px-16 py-10">
@@ -85,83 +89,217 @@
 
     </div>
 
-    <div class="space-y-4">
+    <div class="space-y-5">
 
         @forelse ($reports as $report)
 
-            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5 hover:shadow-md transition"
-                 x-data="{ expanded: false }">
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 hover:shadow-lg transition-all duration-300 overflow-hidden"
+                 x-data="{ expanded: false, actionOpen: false }">
 
-                <div class="flex justify-between items-start">
-                    <div class="flex-1 min-w-0">
-                        <h2 class="font-bold text-gray-800">{{ $report->judul }}</h2>
-                        <p class="text-xs text-gray-400 mt-1">
-                            {{ $report->created_at->translatedFormat('d F Y, H:i') }}
-                        </p>
-                    </div>
-
-                    <div class="flex items-center gap-3 ml-4">
-                        @php
-                            $colors = [
-                                'Menunggu' => 'yellow',
-                                'Diproses' => 'blue',
-                                'Selesai' => 'green',
-                                'Dibatalkan' => 'red'
-                            ];
-                            $c = $colors[$report->status] ?? 'gray';
-                        @endphp
-
-                        <span class="px-3 py-1 rounded-full text-xs font-bold bg-{{ $c }}-100 text-{{ $c }}-700">
-                            {{ $report->status }}
-                        </span>
-
-                        <button @click="expanded = !expanded"
-                                class="text-gray-400 hover:text-gray-600 transition">
-                            <svg class="w-5 h-5 transition-transform"
-                                 :class="{ 'rotate-180': expanded }"
-                                 fill="none"
-                                 stroke="currentColor"
-                                 viewBox="0 0 24 24">
-                                <path stroke-linecap="round"
-                                      stroke-linejoin="round"
-                                      stroke-width="2"
-                                      d="M19 9l-7 7-7-7"/>
-                            </svg>
-                        </button>
-                    </div>
+                <!-- Photo Section -->
+                <div class="relative h-56 bg-gray-100 overflow-hidden">
+                    @if($report->foto_laporan && Storage::disk('public')->exists($report->foto_laporan))
+                        <img src="{{ asset('storage/' . $report->foto_laporan) }}" 
+                             alt="{{ $report->judul }}"
+                             class="w-full h-full object-cover hover:scale-105 transition duration-300">
+                    @else
+                        <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200">
+                            <div class="text-center">
+                                <p class="text-5xl mb-3">📸</p>
+                                <p class="text-gray-400 text-sm">Tidak ada foto</p>
+                            </div>
+                        </div>
+                    @endif
                 </div>
 
-                <div x-show="expanded"
-                     x-transition
-                     class="mt-4 pt-4 border-t border-gray-100"
-                     style="display:none;">
-                    <p class="text-sm text-gray-600">
-                        {{ $report->deskripsi }}
-                    </p>
+                <!-- Content Section -->
+                <div class="p-6">
+
+                    <div class="flex justify-between items-start mb-4">
+                        <div class="flex-1 min-w-0">
+                            <h2 class="font-bold text-lg text-gray-800">{{ $report->judul }}</h2>
+                            <p class="text-xs text-gray-400 mt-2">
+                                📅 {{ $report->created_at->translatedFormat('d F Y, H:i') }}
+                            </p>
+                        </div>
+
+                        <div class="flex items-center gap-2 ml-4">
+                            @php
+                                $colors = [
+                                    'Menunggu' => ['bg' => 'bg-yellow-100', 'text' => 'text-yellow-700'],
+                                    'Diproses' => ['bg' => 'bg-blue-100', 'text' => 'text-blue-700'],
+                                    'Selesai' => ['bg' => 'bg-green-100', 'text' => 'text-green-700'],
+                                    'Dibatalkan' => ['bg' => 'bg-red-100', 'text' => 'text-red-700']
+                                ];
+                                $c = $colors[$report->status] ?? ['bg' => 'bg-gray-100', 'text' => 'text-gray-700'];
+                            @endphp
+
+                            <span class="px-3 py-1.5 rounded-full text-xs font-bold {{ $c['bg'] }} {{ $c['text'] }}">
+                                {{ $report->status }}
+                            </span>
+
+                            <!-- Action Dropdown -->
+                            <div class="relative">
+                                <button @click="actionOpen = !actionOpen"
+                                        class="text-gray-400 hover:text-gray-600 transition p-2 hover:bg-gray-100 rounded-lg">
+                                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M10.5 1.5H9.5V3.5H10.5V1.5ZM10.5 8.5H9.5V14.5H10.5V8.5ZM10.5 17.5H9.5V19.5H10.5V17.5Z"/>
+                                    </svg>
+                                </button>
+
+                                <div x-show="actionOpen"
+                                     @click.away="actionOpen = false"
+                                     x-transition
+                                     class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-100 z-10">
+                                    <a href="{{ route('reports.edit', $report->id) }}"
+                                       class="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 border-b border-gray-100">
+                                        <span>✏️</span>
+                                        <span>Edit Laporan</span>
+                                    </a>
+
+                                    <form method="POST"
+                                          action="{{ route('reports.destroy', $report->id) }}"
+                                          onsubmit="return confirm('Apakah Anda yakin ingin menghapus laporan ini? Foto akan otomatis dihapus.');"
+                                          class="w-full">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit"
+                                                class="w-full flex items-center gap-3 px-4 py-3 text-sm text-red-600 hover:bg-red-50 text-left">
+                                            <span>🗑️</span>
+                                            <span>Hapus Laporan</span>
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Description and Detail Alamat -->
+                    <div class="space-y-2 mb-4">
+                        <div>
+                            <p class="text-xs font-semibold text-gray-500 mb-1.5 uppercase tracking-wide">Deskripsi:</p>
+                            <p class="text-sm text-gray-700 line-clamp-2 leading-relaxed">
+                                {{ $report->deskripsi }}
+                            </p>
+                        </div>
+
+                        <div>
+                            <p class="text-xs font-semibold text-gray-500 mb-1.5 uppercase tracking-wide">📍 Lokasi:</p>
+                            <p class="text-sm text-gray-700 line-clamp-2 leading-relaxed">
+                                {{ $report->detail_alamat ?? '-' }}
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Expand Button -->
+                    <button @click="expanded = !expanded"
+                            class="w-full text-center text-sm text-sipilah-green font-semibold hover:text-green-700 transition py-2 rounded-lg hover:bg-green-50">
+                        <span x-show="!expanded">Lihat Detail & Hasil Penanganan ↓</span>
+                        <span x-show="expanded">Sembunyikan ↑</span>
+                    </button>
+
+                    <!-- Full Content (Expanded) -->
+                    <div x-show="expanded"
+                         x-transition
+                         class="mt-6 pt-6 border-t border-gray-100"
+                         style="display:none;">
+
+                        <!-- Feedback Section -->
+                        <div class="bg-gradient-to-br from-blue-50 via-blue-50 to-indigo-50 rounded-2xl p-6 border border-blue-200 shadow-sm">
+                            <div class="flex items-center gap-2 mb-5 pb-4 border-b-2 border-blue-200">
+                                <span class="text-2xl">💬</span>
+                                <div>
+                                    <h3 class="font-bold text-gray-800">Hasil Penanganan</h3>
+                                    <p class="text-xs text-gray-500 mt-0.5">Respons dari admin pengelola sampah</p>
+                                </div>
+                            </div>
+                            
+                            @if($report->feedback)
+                                <div class="space-y-4">
+                                    <!-- Penjelasan Admin -->
+                                    <div class="bg-white rounded-xl p-4 border border-blue-100 shadow-xs !text-left">
+                                        <p class="text-xs font-bold text-blue-600 mb-3 uppercase tracking-wider">📝 Penjelasan Admin</p>
+                                        <p class="text-sm text-gray-700  leading-relaxed text-left m-0 p-0">
+                                            {{ $report->feedback->description }}
+                                        </p>
+                                    </div>
+
+                                    <!-- Foto Hasil Penanganan -->
+                                    @if($report->feedback->photo)
+                                        <div class="bg-white rounded-xl p-4 border border-blue-100 shadow-xs">
+                                            <p class="text-xs font-bold text-blue-600 mb-3 uppercase tracking-wider">📸 Foto Hasil Penanganan</p>
+                                            <img src="{{ asset('storage/' . $report->feedback->photo) }}" 
+                                                 alt="Foto Hasil" 
+                                                 class="w-full h-56 object-cover rounded-lg border-2 border-blue-100 hover:shadow-md transition">
+                                        </div>
+                                    @endif
+
+                                    <!-- Info Section -->
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                        <div class="bg-white rounded-lg p-4 border border-blue-100">
+                                            <p class="text-xs text-gray-600 mb-1">⏰ Diperbarui</p>
+                                            <p class="text-sm font-semibold text-gray-700">
+                                                {{ $report->feedback->updated_at->translatedFormat('d F Y, H:i') }}
+                                            </p>
+                                        </div>
+
+                                        @if($report->feedback->admin)
+                                            <div class="bg-white rounded-lg p-4 border border-blue-100">
+                                                <p class="text-xs text-gray-600 mb-1">👤 Admin Pengelola</p>
+                                                <p class="text-sm font-semibold text-gray-700">
+                                                    {{ $report->feedback->admin->name }}
+                                                </p>
+                                            </div>
+                                        @endif
+                                    </div>
+
+                                    <!-- Reward Status -->
+                                    @if($report->is_rewarded)
+                                        <div class="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-4 border-2 border-green-300">
+                                            <div class="flex items-center gap-3">
+                                                <span class="text-2xl">⭐</span>
+                                                <div>
+                                                    <p class="text-sm font-bold text-green-700">Reward Diterima!</p>
+                                                    <p class="text-xs text-green-600 mt-0.5">Kamu sudah mendapatkan <strong>10 poin</strong> untuk laporan ini</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endif
+                                </div>
+                            @else
+                                <div class="bg-white rounded-xl p-8 text-center border border-blue-100">
+                                    <p class="text-3xl mb-3">⏳</p>
+                                    <p class="text-sm text-blue-700 font-semibold mb-2">Laporan sedang dalam proses</p>
+                                    <p class="text-xs text-gray-600">Admin akan segera memberikan hasil penanganan dan feedback untuk laporan Anda</p>
+                                </div>
+                            @endif
+                        </div>
+                    </div>
+
                 </div>
 
             </div>
 
         @empty
 
-            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-14 text-center relative overflow-hidden">
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-16 text-center relative overflow-hidden">
                 
-                <div class="absolute inset-0 bg-gradient-to-br from-green-50 to-transparent opacity-40"></div>
+                <div class="absolute inset-0 bg-gradient-to-br from-green-50 via-emerald-50 to-transparent opacity-50"></div>
 
                 <div class="relative z-10">
 
-                    <div class="text-6xl mb-6 float">📭</div>
+                    <div class="text-7xl mb-6 float">📭</div>
 
-                    <h2 class="text-lg font-bold text-gray-700 mb-2">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-3">
                         Belum ada laporan
                     </h2>
 
-                    <p class="text-gray-400 text-sm mb-6 max-w-sm mx-auto">
-                        Kamu belum membuat laporan. Yuk mulai kontribusi untuk lingkungan 🌱
+                    <p class="text-gray-500 text-sm mb-8 max-w-sm mx-auto leading-relaxed">
+                        Kamu belum membuat laporan. Yuk mulai kontribusi untuk menjaga lingkungan 🌱
                     </p>
 
                     <a href="{{ route('reports.create') }}"
-                       class="bg-sipilah-green text-white px-6 py-3 rounded-xl text-sm font-bold hover:bg-green-700 transition shadow-sm inline-block">
+                       class="bg-sipilah-green text-white px-8 py-3 rounded-xl text-sm font-bold hover:bg-green-700 transition shadow-md inline-block">
                         + Buat Laporan Pertama
                     </a>
 

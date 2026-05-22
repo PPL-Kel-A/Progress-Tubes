@@ -24,6 +24,7 @@ class User extends Authenticatable
         'password',
         'is_admin',
         'profile_photo',
+        'points',
     ];
 
     /**
@@ -62,5 +63,10 @@ class User extends Authenticatable
     public function reports()
     {
         return $this->hasMany(\App\Models\Report::class);
+    }
+
+    public function reportFeedbacks()
+    {
+        return $this->hasMany(\App\Models\ReportFeedback::class, 'admin_id');
     }
 }
