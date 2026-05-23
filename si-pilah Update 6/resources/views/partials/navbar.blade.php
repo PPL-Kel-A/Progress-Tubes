@@ -23,7 +23,10 @@
                 </div>
             </div>
 
-            <a href="#" class="hover:text-green-600 transition">Reward</a>
+            <a href="{{ route('rewards.index') }}" 
+                class="hover:text-green-600 transition">
+                Reward
+            </a>
             <a href="{{ route('about') }}" class="hover:text-green-600 transition {{ request()->routeIs('about') ? 'text-green-600 border-b-2 border-green-600 pb-1' : '' }}">About</a>
             <a href="{{ route('contact') }}" class="hover:text-green-600 transition {{ request()->routeIs('contact') ? 'text-green-600 border-b-2 border-green-600 pb-1' : '' }}">Contact</a>
         </div>

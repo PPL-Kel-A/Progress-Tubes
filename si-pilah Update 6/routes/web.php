@@ -9,6 +9,8 @@ use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\EducationController;
 use App\Http\Controllers\ContactMessageController;
 use App\Http\Controllers\ReviewController;
+use App\Http\Controllers\RewardController;
+use App\Http\Controllers\RedeemController;
 
 // ==================== HOME ====================
 Route::get('/', function () {
@@ -69,7 +71,19 @@ Route::middleware('auth')->group(function () {
 
     // Reviews
     Route::post('/reviews', [ReviewController::class, 'store'])->name('reviews.store');
-});
+
+    // REWARD
+
+    Route::get('/rewards', [RewardController::class, 'index'])
+        ->name('rewards.index');
+
+    Route::get('/rewards/redeem', [RedeemController::class, 'index'])
+        ->name('rewards.redeem');
+
+    Route::post('/rewards/redeem/{id}', [RedeemController::class, 'redeem'])
+        ->name('rewards.claim');
+
+    });
 
 // ==================== PUBLIC ====================
 Route::get('/about', function () {

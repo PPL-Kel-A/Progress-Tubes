@@ -9,6 +9,8 @@ class Reward extends Model
     protected $fillable = [
         'user_id',
         'points',
+        'type',
+        'description',
     ];
 
     public function user()
