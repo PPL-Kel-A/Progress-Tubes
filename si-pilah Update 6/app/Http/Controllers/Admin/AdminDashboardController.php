@@ -120,9 +120,30 @@ class AdminDashboardController extends Controller
             'status' => 'required|in:Pending,Diproses,Selesai,Dibatalkan',
         ]);
 
-        $waste->update(['status' => $request->status]);
+        $waste->update([
+            'status' => $request->status
+        ]);
+
+        // Reward otomatis saat selesai
+        if ($request->status === 'Selesai') {
+
+            $rewardService = new RewardPointService();
+
+            $rewardService->awardPointsForCompletedWaste($waste);
+        }
+
         return back()->with('success', 'Status sampah diperbarui.');
     }
+
+    // public function updateWasteStatus(Request $request, Waste $waste)
+    // {
+    //     $request->validate([
+    //         'status' => 'required|in:Pending,Diproses,Selesai,Dibatalkan',
+    //     ]);
+
+    //     $waste->update(['status' => $request->status]);
+    //     return back()->with('success', 'Status sampah diperbarui.');
+    // }
 
     public function deleteWaste(Waste $waste)
     {
@@ -229,7 +250,16 @@ class AdminDashboardController extends Controller
             'points'  => 'required|integer|min:1',
         ]);
 
-        Reward::create($request->only('user_id', 'points'));
+        Reward::create([
+        'user_id'     => $request->user_id,
+        'points'      => $request->points,
+        'type'        => 'manual',
+        'description' => 'Reward dari admin',
+        ]);
+
+        User::find($request->user_id)->increment('points', $request->points);
+
+        // Reward::create($request->only('user_id', 'points'));
 
         return back()->with('success', 'Reward ditambahkan.');
     }

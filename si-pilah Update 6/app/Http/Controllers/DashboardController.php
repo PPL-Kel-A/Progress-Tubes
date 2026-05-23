@@ -40,7 +40,7 @@ class DashboardController extends Controller
         $data = [
             // Data per-user (filter by user_id)
             'total_sampah'     => Waste::where('user_id', $userId)->sum('weight') ?? 0, 
-            'poin_reward'      => Reward::where('user_id', $userId)->sum('points') ?? 0,
+            'poin_reward'      => Auth::user()->points ?? 0,
             'energi_surya_kwh' => Waste::where('user_id', $userId)->sum('result') ?? 0,
             
             

@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Waste;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use App\Services\RewardPointService;
 
 class WasteController extends Controller
 {
@@ -116,6 +117,7 @@ class WasteController extends Controller
             'tps' => $fullLocation,
             'image' => $newPath,
             'result' => $result,
+            
         ]);
 
         // =========================
