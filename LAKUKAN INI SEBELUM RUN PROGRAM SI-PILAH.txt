@@ -1,6 +1,8 @@
 Lakukan ini sebelum run code dari repo github :
 
 composer install
+php artisan key:generate
+php artisan migrate:fresh
 npm install
 npm run build
 
