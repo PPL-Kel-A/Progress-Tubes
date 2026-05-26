@@ -67,8 +67,11 @@
                                             </span>
                                         </div>
 
-                                        {{-- Content --}}
-                                        <p class="text-gray-700 leading-relaxed text-[15px]">
+                                        {{-- Title & Content --}}
+                                        <h3 class="font-bold text-gray-800 text-[16px] mb-1.5 leading-snug group-hover:text-green-700 transition">
+                                            {{ $announcement->judul ?: 'Pengumuman Resmi' }}
+                                        </h3>
+                                        <p class="text-gray-600 leading-relaxed text-sm">
                                             {{ $announcement->konten }}
                                         </p>
 

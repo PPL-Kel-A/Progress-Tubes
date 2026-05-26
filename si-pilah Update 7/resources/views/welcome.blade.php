@@ -66,15 +66,19 @@
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 @forelse ($beritaTerkini as $berita)
                     <div class="bg-gray-50 rounded-xl p-6 border border-gray-200 hover:shadow-md transition group cursor-pointer">
-                        <span class="text-xs font-bold bg-green-100 text-green-700 px-3 py-1 rounded-full uppercase tracking-wider">
+                        <span class="text-[10px] font-bold bg-green-100 text-green-700 px-3 py-1 rounded-full uppercase tracking-wider">
                             {{ $berita->created_at->translatedFormat('d F Y') }}
                         </span>
                         
-                        <p class="text-gray-800 mt-4 leading-relaxed line-clamp-3">
+                        <h3 class="font-bold text-gray-800 mt-4 text-base group-hover:text-green-700 transition line-clamp-1">
+                            {{ $berita->judul ?: 'Pengumuman Resmi' }}
+                        </h3>
+                        
+                        <p class="text-gray-600 mt-2 text-xs leading-relaxed line-clamp-3">
                             {{ $berita->konten }}
                         </p>
                         
-                        <div class="mt-6 text-sm font-bold text-sipilah-green group-hover:text-green-600">
+                        <div class="mt-4 text-xs font-bold text-sipilah-green group-hover:text-green-600">
                             Baca selengkapnya →
                         </div>
                     </div>

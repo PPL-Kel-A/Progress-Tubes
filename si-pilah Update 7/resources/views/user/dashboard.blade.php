@@ -7,10 +7,16 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <script src="//unpkg.com/alpinejs" defer></script>
+
+    <!-- Leaflet Map Integration -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
     <style>
         body { font-family: 'Poppins', sans-serif; }
         .bg-sipilah-green { background-color: #1b5e20; }
         .text-sipilah-green { color: #1b5e20; }
+        [x-cloak] { display: none !important; }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-800" x-data="{ showFeedback: false, feedbackWasteId: null, rating: 0, hoverRating: 0 }">
@@ -146,81 +152,186 @@
             @endif
         </div>
 
-        {{-- ── Jadwal Penjemputan ── --}}
-        <h2 class="text-xl font-bold text-gray-700 mb-6">Jadwal Penjemputan Mendatang</h2>
-        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden mb-10">
-            @if($jadwalMendatang->count() > 0)
-                <div class="overflow-x-auto">
-                    <table class="w-full text-sm">
-                        <thead class="bg-gradient-to-r from-green-50 to-emerald-50 text-gray-500 text-xs uppercase">
-                            <tr>
-                                <th class="px-5 py-3 text-left">Waktu Penjemputan</th>
-                                <th class="px-5 py-3 text-left">Kategori Sampah</th>
-                                <th class="px-5 py-3 text-left">Petugas</th>
-                                <th class="px-5 py-3 text-left">Status</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-gray-50">
-                            @foreach($jadwalMendatang as $jadwal)
-                            @php
-                                $waktu = \Carbon\Carbon::parse($jadwal->waktu_jemput);
-                                $isToday = $waktu->isToday();
-                                $isTomorrow = $waktu->isTomorrow();
-                            @endphp
-                            <tr class="hover:bg-green-50/30 transition {{ $isToday ? 'bg-green-50/50' : '' }}">
-                                <td class="px-5 py-4">
-                                    <div class="flex items-center gap-3">
-                                        <div class="flex-shrink-0 w-12 h-12 rounded-xl flex flex-col items-center justify-center text-center {{ $isToday ? 'bg-green-600 text-white' : 'bg-gray-100 text-gray-600' }}">
-                                            <span class="text-xs font-bold leading-none">{{ $waktu->translatedFormat('d') }}</span>
-                                            <span class="text-[10px] uppercase leading-none mt-0.5">{{ $waktu->translatedFormat('M') }}</span>
-                                        </div>
-                                        <div>
-                                            <p class="font-semibold text-gray-800">{{ $waktu->translatedFormat('l, d F Y') }}</p>
-                                            <p class="text-xs text-gray-500 mt-0.5">🕐 {{ $waktu->format('H:i') }} WIB</p>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="px-5 py-4">
-                                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-700">
-                                        ♻️ {{ $jadwal->kategori }}
-                                    </span>
-                                </td>
-                                <td class="px-5 py-4">
-                                    <div class="flex items-center gap-2">
-                                        <div class="w-7 h-7 rounded-lg bg-gray-100 flex items-center justify-center text-xs font-bold text-gray-600">
-                                            {{ strtoupper(substr($jadwal->nama_petugas, 0, 1)) }}
-                                        </div>
-                                        <span class="text-gray-700 font-medium">{{ $jadwal->nama_petugas }}</span>
-                                    </div>
-                                </td>
-                                <td class="px-5 py-4">
-                                    @if($isToday)
-                                        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-green-100 text-green-700 animate-pulse">
-                                            <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span> Hari Ini
-                                        </span>
-                                    @elseif($isTomorrow)
-                                        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-700">
-                                            <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span> Besok
-                                        </span>
-                                    @else
-                                        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-blue-50 text-blue-600">
-                                            <span class="w-1.5 h-1.5 rounded-full bg-blue-400"></span> {{ $waktu->diffForHumans() }}
-                                        </span>
-                                    @endif
-                                </td>
-                            </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-            @else
-                <div class="py-10 text-center">
-                    <div class="text-4xl mb-3">📅</div>
-                    <p class="text-gray-400 font-medium text-sm">Belum ada jadwal penjemputan mendatang.</p>
-                    <p class="text-gray-300 text-xs mt-1">Jadwal baru akan muncul setelah admin menambahkan jadwal penjemputan.</p>
-                </div>
-            @endif
+        {{-- ── Jadwal Penjemputan & TPS Terdekat ── --}}
+        <div class="flex items-center justify-between mb-4">
+            <h2 class="text-xl font-bold text-gray-700">Jadwal Penjemputan & TPS Terdekat</h2>
         </div>
+
+        @if($tpsTerdekatUser)
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-10">
+                <!-- Tabel Jadwal Truk (Col-span 2) -->
+                <div class="lg:col-span-2 space-y-4">
+                    <div class="flex items-center gap-2">
+                        <div class="flex items-center gap-2 px-4 py-2 bg-green-50 border border-green-200 rounded-xl shadow-sm">
+                            <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                            <span class="text-xs sm:text-sm font-semibold text-green-800">Wilayah Penjemputan: {{ $kelurahanUser }}</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                        @if($jadwalMendatang->count() > 0)
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-sm">
+                                    <thead class="bg-gradient-to-r from-green-50 to-emerald-50 text-gray-500 text-xs uppercase">
+                                        <tr>
+                                            <th class="px-5 py-3 text-left">Waktu Penjemputan</th>
+                                            <th class="px-5 py-3 text-left">Kategori Sampah</th>
+                                            <th class="px-5 py-3 text-left">Petugas</th>
+                                            <th class="px-5 py-3 text-left">Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-gray-50">
+                                        @foreach($jadwalMendatang as $jadwal)
+                                        @php
+                                            $waktu = \Carbon\Carbon::parse($jadwal->waktu_jemput);
+                                            $isToday = $waktu->isToday();
+                                            $isTomorrow = $waktu->isTomorrow();
+                                        @endphp
+                                        <tr class="hover:bg-green-50/30 transition {{ $isToday ? 'bg-green-50/50' : '' }}">
+                                            <td class="px-5 py-4">
+                                                <div class="flex items-center gap-3">
+                                                    <div class="flex-shrink-0 w-12 h-12 rounded-xl flex flex-col items-center justify-center text-center {{ $isToday ? 'bg-green-600 text-white animate-pulse' : 'bg-gray-100 text-gray-600' }}">
+                                                        <span class="text-xs font-bold leading-none">{{ $waktu->translatedFormat('d') }}</span>
+                                                        <span class="text-[10px] uppercase leading-none mt-0.5">{{ $waktu->translatedFormat('M') }}</span>
+                                                    </div>
+                                                    <div>
+                                                        <p class="font-semibold text-gray-800">{{ $waktu->translatedFormat('l, d F Y') }}</p>
+                                                        <p class="text-xs text-gray-500 mt-0.5">🕐 {{ $waktu->format('H:i') }} WIB</p>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="px-5 py-4">
+                                                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-700">
+                                                    ♻️ {{ $jadwal->kategori }}
+                                                </span>
+                                            </td>
+                                            <td class="px-5 py-4">
+                                                <div class="flex items-center gap-2">
+                                                    <div class="w-7 h-7 rounded-lg bg-gray-100 flex items-center justify-center text-xs font-bold text-gray-600">
+                                                        {{ strtoupper(substr($jadwal->nama_petugas, 0, 1)) }}
+                                                    </div>
+                                                    <span class="text-gray-700 font-medium">{{ $jadwal->nama_petugas }}</span>
+                                                </div>
+                                            </td>
+                                            <td class="px-5 py-4">
+                                                @if($isToday)
+                                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-green-100 text-green-700 animate-pulse">
+                                                        <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span> 🚛 Hari Ini
+                                                    </span>
+                                                @elseif($isTomorrow)
+                                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-700">
+                                                        <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span> Besok
+                                                    </span>
+                                                @else
+                                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-blue-50 text-blue-600">
+                                                        <span class="w-1.5 h-1.5 rounded-full bg-blue-400"></span> {{ $waktu->diffForHumans() }}
+                                                    </span>
+                                                @endif
+                                            </td>
+                                        </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                        @else
+                            {{-- Kelurahan diisi tapi belum ada jadwal --}}
+                            <div class="py-12 text-center">
+                                <div class="text-5xl mb-3">📅</div>
+                                <p class="text-gray-500 font-semibold text-sm">Jadwal belum tersedia untuk wilayah Anda.</p>
+                                <p class="text-gray-400 text-xs mt-1.5 max-w-sm mx-auto">Kami akan memberi tahu Anda begitu admin menjadwalkan penjemputan berikutnya untuk wilayah <strong>{{ $kelurahanUser }}</strong>.</p>
+                            </div>
+                        @endif
+                    </div>
+                </div>
+
+                <!-- Info TPS Terdekat (Col-span 1) -->
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 flex flex-col justify-between hover:shadow-md transition duration-300">
+                    <div>
+                        <div class="flex items-center gap-2.5 mb-4">
+                            <span class="flex items-center justify-center w-9 h-9 rounded-xl bg-green-100 text-green-700 font-bold text-lg">📍</span>
+                            <div>
+                                <h3 class="text-sm font-bold text-gray-800">TPS Terdekat Anda</h3>
+                                <p class="text-[10px] text-gray-400">Tempat Pembuangan Sampah Pilihan</p>
+                            </div>
+                        </div>
+
+                        <!-- Card Detail Alamat TPS -->
+                        <div class="space-y-3 bg-gradient-to-br from-green-50/60 to-emerald-50/30 border border-green-100 rounded-2xl p-4 mb-4">
+                            <div>
+                                <p class="text-[10px] text-green-700 font-semibold uppercase tracking-wider">Nama Lokasi</p>
+                                <p class="text-sm font-extrabold text-gray-800">{{ $tpsTerdekatUser['nama'] }}</p>
+                            </div>
+                            <div>
+                                <p class="text-[10px] text-green-700 font-semibold uppercase tracking-wider">Alamat Lengkap</p>
+                                <p class="text-xs text-gray-600 leading-relaxed font-semibold">{{ $tpsTerdekatUser['address'] }}</p>
+                            </div>
+                            <div>
+                                <p class="text-[10px] text-green-700 font-semibold uppercase tracking-wider">Wilayah Kelurahan</p>
+                                <p class="text-xs text-gray-600 font-semibold">{{ $tpsTerdekatUser['desa'] }}</p>
+                            </div>
+                        </div>
+
+                        <!-- Peta Leaflet Dashboard -->
+                        <div class="mb-4">
+                            <p class="text-[10px] font-semibold text-gray-500 mb-1.5 flex items-center gap-1">🗺️ Titik Lokasi Peta:</p>
+                            <div id="tpsDashboardMap" class="rounded-xl border border-gray-200 overflow-hidden shadow-inner" style="height: 180px; z-index: 1;"></div>
+                        </div>
+                    </div>
+
+                    <div class="pt-3 border-t border-gray-100 flex items-center justify-between">
+                        <p class="text-[9px] text-gray-400 leading-relaxed max-w-[80%]">
+                            ℹ️ Jadwal kedatangan truk disesuaikan otomatis dengan wilayah operasional TPS terdekat Anda.
+                        </p>
+                        <a href="{{ route('profile.edit') }}" class="text-[10px] text-green-600 font-bold hover:underline">Ubah TPS →</a>
+                    </div>
+                </div>
+            </div>
+
+            <script>
+                document.addEventListener("DOMContentLoaded", function () {
+                    const lat = {{ $tpsTerdekatUser['lat'] }};
+                    const lng = {{ $tpsTerdekatUser['lng'] }};
+                    const name = "{{ $tpsTerdekatUser['nama'] }}";
+                    const address = "{{ $tpsTerdekatUser['address'] }}";
+
+                    const dMap = L.map('tpsDashboardMap', {
+                        zoomControl: false,
+                        attributionControl: false
+                    }).setView([lat, lng], 15);
+
+                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                        maxZoom: 19
+                    }).addTo(dMap);
+
+                    const greenIcon = L.icon({
+                        iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
+                        shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
+                        iconSize: [20, 32],
+                        iconAnchor: [10, 32],
+                        popupAnchor: [1, -28],
+                        shadowSize: [32, 32]
+                    });
+
+                    L.marker([lat, lng], { icon: greenIcon })
+                        .addTo(dMap)
+                        .bindPopup(`<strong>${name}</strong><br><span style="font-size:10px;color:#666">${address}</span>`)
+                        .openPopup();
+                });
+            </script>
+        @else
+            {{-- User belum mengisi / mengatur TPS Terdekat --}}
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-10 py-10 px-6 text-center hover:shadow-md transition duration-300">
+                <div class="text-5xl mb-4">📍</div>
+                <h3 class="text-base font-bold text-gray-800 mb-2">Jadwal & TPS Terdekat Belum Diatur</h3>
+                <p class="text-gray-400 text-xs mb-6 max-w-md mx-auto leading-relaxed">
+                    Silakan pilih **TPS Terdekat** pada pengaturan profil Anda agar sistem dapat menyinkronkan jadwal truk sampah dan memetakan lokasi penjemputan secara interaktif.
+                </p>
+                <a href="{{ route('profile.edit') }}" class="inline-flex items-center gap-2 bg-green-700 text-white px-6 py-3 rounded-xl text-sm font-bold hover:bg-green-800 transition shadow-sm active:scale-95 duration-150">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                    Pilih TPS Terdekat Sekarang
+                </a>
+            </div>
+        @endif
 
         <h2 class="text-xl font-bold text-gray-700 mb-6">Informasi & Edukasi</h2>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -440,6 +551,85 @@
             </div>
         </div>
     </div>
+
+    {{-- ── MODAL POPUP PENGUMUMAN TERBARU ── --}}
+    @if($pengumumanTerbaru)
+        <div x-data="{ showAnnouncement: false }"
+             x-init="if (localStorage.getItem('seen_announcement_' + {{ $pengumumanTerbaru->id }}) !== 'true') { setTimeout(() => { showAnnouncement = true; }, 800); }"
+             x-show="showAnnouncement"
+             x-cloak
+             class="fixed inset-0 z-50 overflow-y-auto"
+             style="display: none;">
+            
+            {{-- Backdrop overlay --}}
+            <div class="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity"
+                 x-show="showAnnouncement"
+                 x-transition:enter="ease-out duration-300"
+                 x-transition:enter-start="opacity-0"
+                 x-transition:enter-end="opacity-100"
+                 x-transition:leave="ease-in duration-200"
+                 x-transition:leave-start="opacity-100"
+                 x-transition:leave-end="opacity-0"
+                 @click="showAnnouncement = false; localStorage.setItem('seen_announcement_' + {{ $pengumumanTerbaru->id }}, 'true');"></div>
+
+            {{-- Modal Wrapper --}}
+            <div class="flex min-h-full items-center justify-center p-4 text-center">
+                <div class="relative transform overflow-hidden rounded-3xl bg-white text-left shadow-2xl transition-all sm:my-8 sm:w-full sm:max-w-lg border border-orange-100"
+                     x-show="showAnnouncement"
+                     x-transition:enter="ease-out duration-300"
+                     x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                     x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
+                     x-transition:leave="ease-in duration-200"
+                     x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
+                     x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
+                    
+                    {{-- Decorative top glow --}}
+                    <div class="h-2 bg-gradient-to-r from-orange-500 via-amber-500 to-yellow-500"></div>
+
+                    {{-- Close Button top right --}}
+                    <button class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition focus:outline-none"
+                            @click="showAnnouncement = false; localStorage.setItem('seen_announcement_' + {{ $pengumumanTerbaru->id }}, 'true');">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                    </button>
+
+                    <div class="p-6">
+                        {{-- Icon & Badge Header --}}
+                        <div class="flex items-center gap-2 mb-4">
+                            <span class="flex items-center justify-center w-8 h-8 rounded-lg bg-orange-100 text-orange-600 font-bold text-sm">🔔</span>
+                            <span class="text-xs font-bold text-orange-600 uppercase tracking-widest">Pengumuman Penting</span>
+                        </div>
+
+                        {{-- Title --}}
+                        <h3 class="text-lg font-bold text-gray-900 mb-3 leading-snug">
+                            {{ $pengumumanTerbaru->judul ?: 'Pengumuman Resmi Si-Pilah' }}
+                        </h3>
+
+                        {{-- Content --}}
+                        <p class="text-sm text-gray-600 leading-relaxed bg-gray-50 border border-gray-100 rounded-2xl p-4 mb-5 max-h-[220px] overflow-y-auto">
+                            {{ $pengumumanTerbaru->konten }}
+                        </p>
+
+                        {{-- Footer Info --}}
+                        <div class="flex items-center justify-between text-[10px] text-gray-400 font-medium mb-6">
+                            <span class="flex items-center gap-1">
+                                📅 Terbit: {{ $pengumumanTerbaru->created_at->translatedFormat('d F Y, H:i') }}
+                            </span>
+                            <span class="flex items-center gap-1">
+                                Tim Si-Pilah
+                            </span>
+                        </div>
+
+                        {{-- Close Button --}}
+                        <button type="button"
+                                class="w-full bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-700 hover:to-amber-700 text-white font-bold py-3 rounded-2xl transition shadow-md active:scale-95 duration-100 flex items-center justify-center gap-1.5"
+                                @click="showAnnouncement = false; localStorage.setItem('seen_announcement_' + {{ $pengumumanTerbaru->id }}, 'true');">
+                            <span>✅</span> Mengerti & Tutup
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
 
 </body>
 </html>

@@ -15,7 +15,18 @@ use App\Http\Controllers\RedeemController;
 // ==================== HOME ====================
 Route::get('/', function () {
     try {
-        $beritaTerkini = \App\Models\Announcement::latest()->take(3)->get();
+        $beritaTerkini = \App\Models\Announcement::whereNull('user_id')
+            ->where(function($q) {
+                $q->whereNull('start_at')
+                  ->orWhere('start_at', '<=', now());
+            })
+            ->where(function($q) {
+                $q->whereNull('end_at')
+                  ->orWhere('end_at', '>=', now());
+            })
+            ->latest()
+            ->take(3)
+            ->get();
     } catch (\Exception $e) {
         $beritaTerkini = [];
     }

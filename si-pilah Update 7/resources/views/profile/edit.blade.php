@@ -12,6 +12,10 @@
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
+    <!-- Leaflet Map Integration -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
     <style>
         body { font-family: 'Poppins', sans-serif; }
     </style>

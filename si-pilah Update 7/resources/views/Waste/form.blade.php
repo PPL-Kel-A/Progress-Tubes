@@ -87,6 +87,14 @@
         <option>TPS Kembangan</option>
         <option>TPS Slipi</option>
         <option>TPS Taman Sari</option>
+        <option>TPS Kebayoran Baru</option>
+        <option>TPS Cilandak</option>
+        <option>TPS Menteng</option>
+        <option>TPS Tanah Abang</option>
+        <option>TPS Jatinegara</option>
+        <option>TPS Duren Sawit</option>
+        <option>TPS Penjaringan</option>
+        <option>TPS Kelapa Gading</option>
     </select>
 </div>
 
@@ -236,6 +244,7 @@ const tpsLocations = {
         address: 'Jl. Daan Mogot, Grogol, Jakarta Barat',
         desa: 'Kelurahan Grogol',
         kecamatan: 'Kecamatan Grogol Petamburan',
+        text: 'Jakarta Barat',
         kota: 'Jakarta Barat'
     },
     'TPS Cengkareng': {
@@ -265,6 +274,62 @@ const tpsLocations = {
         desa: 'Kelurahan Taman Sari',
         kecamatan: 'Kecamatan Taman Sari',
         kota: 'Jakarta Barat'
+    },
+    'TPS Kebayoran Baru': {
+        lat: -6.2443, lng: 106.7973,
+        address: 'Jl. Selong, Kebayoran Baru, Jakarta Selatan',
+        desa: 'Kelurahan Selong',
+        kecamatan: 'Kecamatan Kebayoran Baru',
+        kota: 'Jakarta Selatan'
+    },
+    'TPS Cilandak': {
+        lat: -6.2901, lng: 106.7972,
+        address: 'Jl. Cilandak Raya, Jakarta Selatan',
+        desa: 'Kelurahan Cilandak Barat',
+        kecamatan: 'Kecamatan Cilandak',
+        kota: 'Jakarta Selatan'
+    },
+    'TPS Menteng': {
+        lat: -6.2014, lng: 106.8322,
+        address: 'Jl. Menteng Raya, Jakarta Pusat',
+        desa: 'Kelurahan Menteng',
+        kecamatan: 'Kecamatan Menteng',
+        kota: 'Jakarta Pusat'
+    },
+    'TPS Tanah Abang': {
+        lat: -6.2120, lng: 106.8180,
+        address: 'Jl. KH. Mas Mansyur, Tanah Abang, Jakarta Pusat',
+        desa: 'Kelurahan Karet Tengsin',
+        kecamatan: 'Kecamatan Tanah Abang',
+        kota: 'Jakarta Pusat'
+    },
+    'TPS Jatinegara': {
+        lat: -6.2250, lng: 106.8790,
+        address: 'Jl. Jatinegara Timur, Jakarta Timur',
+        desa: 'Kelurahan Bali Mester',
+        kecamatan: 'Kecamatan Jatinegara',
+        kota: 'Jakarta Timur'
+    },
+    'TPS Duren Sawit': {
+        lat: -6.2230, lng: 106.9010,
+        address: 'Jl. Duren Sawit Raya, Jakarta Timur',
+        desa: 'Kelurahan Duren Sawit',
+        kecamatan: 'Kecamatan Duren Sawit',
+        kota: 'Jakarta Timur'
+    },
+    'TPS Penjaringan': {
+        lat: -6.1274, lng: 106.7915,
+        address: 'Jl. Pluit Raya, Penjaringan, Jakarta Utara',
+        desa: 'Kelurahan Penjaringan',
+        kecamatan: 'Kecamatan Penjaringan',
+        kota: 'Jakarta Utara'
+    },
+    'TPS Kelapa Gading': {
+        lat: -6.1550, lng: 106.9020,
+        address: 'Jl. Boulevard Raya, Kelapa Gading, Jakarta Utara',
+        desa: 'Kelurahan Kelapa Gading Timur',
+        kecamatan: 'Kecamatan Kelapa Gading',
+        kota: 'Jakarta Utara'
     }
 };
 

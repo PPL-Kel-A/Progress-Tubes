@@ -25,6 +25,8 @@ class User extends Authenticatable
         'is_admin',
         'profile_photo',
         'points',
+        'kelurahan',
+        'tps_terdekat',
     ];
 
     /**

@@ -10,6 +10,7 @@ class Schedule extends Model
         'waktu_jemput',
         'kategori',
         'nama_petugas',
+        'kelurahan',
     ];
 
     protected $casts = [

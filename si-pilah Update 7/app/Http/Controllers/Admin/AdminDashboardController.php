@@ -39,8 +39,9 @@ class AdminDashboardController extends Controller
 
         $laporanTerbaru = Report::with('user')->latest()->take(5)->get();
         $wastesTerbaru  = Waste::latest()->take(5)->get();
+        $announcements  = Announcement::with('user')->latest()->get();
 
-        return view('admin.dashboard', compact('data', 'laporanTerbaru', 'wastesTerbaru'));
+        return view('admin.dashboard', compact('data', 'laporanTerbaru', 'wastesTerbaru', 'announcements'));
     }
 
     // ==================== USERS ====================
@@ -284,9 +285,10 @@ class AdminDashboardController extends Controller
             'waktu_jemput' => 'required|date',
             'kategori'     => 'required|string|max:255',
             'nama_petugas' => 'required|string|max:255',
+            'kelurahan'    => 'required|string|max:255',
         ]);
 
-        Schedule::create($request->only('waktu_jemput', 'kategori', 'nama_petugas'));
+        Schedule::create($request->only('waktu_jemput', 'kategori', 'nama_petugas', 'kelurahan'));
 
         return back()->with('success', 'Jadwal ditambahkan.');
     }
@@ -297,9 +299,10 @@ class AdminDashboardController extends Controller
             'waktu_jemput' => 'required|date',
             'kategori'     => 'required|string|max:255',
             'nama_petugas' => 'required|string|max:255',
+            'kelurahan'    => 'required|string|max:255',
         ]);
 
-        $schedule->update($request->only('waktu_jemput', 'kategori', 'nama_petugas'));
+        $schedule->update($request->only('waktu_jemput', 'kategori', 'nama_petugas', 'kelurahan'));
 
         return back()->with('success', 'Jadwal diupdate.');
     }
@@ -321,10 +324,18 @@ class AdminDashboardController extends Controller
     public function storeAnnouncement(Request $request)
     {
         $request->validate([
-            'konten' => 'required|string',
+            'judul'    => 'nullable|string|max:255',
+            'konten'   => 'required|string',
+            'start_at' => 'nullable|date',
+            'end_at'   => 'nullable|date|after_or_equal:start_at',
         ]);
 
-        Announcement::create(['konten' => $request->konten]);
+        Announcement::create([
+            'judul'    => $request->judul ?: 'Pengumuman',
+            'konten'   => $request->konten,
+            'start_at' => $request->start_at,
+            'end_at'   => $request->end_at,
+        ]);
 
         return back()->with('success', 'Pengumuman ditambahkan.');
     }
@@ -332,10 +343,18 @@ class AdminDashboardController extends Controller
     public function updateAnnouncement(Request $request, Announcement $announcement)
     {
         $request->validate([
-            'konten' => 'required|string',
+            'judul'    => 'nullable|string|max:255',
+            'konten'   => 'required|string',
+            'start_at' => 'nullable|date',
+            'end_at'   => 'nullable|date|after_or_equal:start_at',
         ]);
 
-        $announcement->update(['konten' => $request->konten]);
+        $announcement->update([
+            'judul'    => $request->judul ?: 'Pengumuman',
+            'konten'   => $request->konten,
+            'start_at' => $request->start_at,
+            'end_at'   => $request->end_at,
+        ]);
 
         return back()->with('success', 'Pengumuman diupdate.');
     }
