@@ -11,7 +11,6 @@ class EducationController extends Controller
     {
         $query = Education::latest();
 
-        // 🔍 SEARCH (opsional tapi berguna banget)
         if ($request->filled('search')) {
             $query->where('title', 'like', '%' . $request->search . '%');
         }
@@ -19,5 +18,10 @@ class EducationController extends Controller
         $educations = $query->paginate(9)->withQueryString();
 
         return view('education.index', compact('educations'));
+    }
+
+    public function show(Education $education)
+    {
+        return view('education.show', compact('education'));
     }
 }

@@ -131,6 +131,7 @@ Route::post('/contact', [ContactMessageController::class, 'store'])->name('conta
 
 // ==================== EDUCATION USER ====================
 Route::get('/education', [EducationController::class, 'index'])->name('education.index');
+Route::get('/education/{education}', [EducationController::class, 'show'])->name('education.show');
 
 // ==================== ADMIN ====================
 Route::middleware(['auth', 'is_admin'])
@@ -193,6 +194,7 @@ Route::middleware(['auth', 'is_admin'])
 
     // UPDATE
     Route::put('/educations/{education}', [AdminDashboardController::class, 'update'])->name('educations.update');
+
 
     // ==================== ABOUT PAGE ====================
     Route::get('/about', [AdminDashboardController::class, 'aboutPage'])->name('about');
