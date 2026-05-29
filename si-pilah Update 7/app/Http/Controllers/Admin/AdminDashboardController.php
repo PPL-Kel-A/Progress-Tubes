@@ -376,13 +376,12 @@ class AdminDashboardController extends Controller
     public function storeEducation(Request $request)
     {
         $request->validate([
-            'title'    => 'required|string|max:255',
-            'cover'    => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-            'file_pdf' => 'required|mimes:pdf|max:2048',
+            'title'   => 'required|string|max:255',
+            'content' => 'required|string',
+            'cover'   => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
 
         $coverName = null;
-        $pdfName   = null;
 
         if ($request->hasFile('cover')) {
             $cover = $request->file('cover');
@@ -390,16 +389,10 @@ class AdminDashboardController extends Controller
             $cover->move(public_path('cover'), $coverName);
         }
 
-        if ($request->hasFile('file_pdf')) {
-            $file = $request->file('file_pdf');
-            $pdfName = time().'_pdf_'.$file->getClientOriginalName();
-            $file->move(public_path('pdf'), $pdfName);
-        }
-
         Education::create([
-            'title'    => $request->title,
-            'cover'    => $coverName,
-            'file_pdf' => $pdfName,
+            'title'   => $request->title,
+            'content' => $request->content,
+            'cover'   => $coverName,
         ]);
 
         return back()->with('success', 'Artikel ditambahkan.');
@@ -407,10 +400,6 @@ class AdminDashboardController extends Controller
 
     public function deleteEducation(Education $education)
     {
-        if ($education->file_pdf && file_exists(public_path('pdf/'.$education->file_pdf))) {
-            unlink(public_path('pdf/'.$education->file_pdf));
-        }
-
         if ($education->cover && file_exists(public_path('cover/'.$education->cover))) {
             unlink(public_path('cover/'.$education->cover));
         }
@@ -428,13 +417,12 @@ class AdminDashboardController extends Controller
     public function update(Request $request, Education $education)
     {
         $request->validate([
-            'title'    => 'required|string|max:255',
-            'cover'    => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-            'file_pdf' => 'nullable|mimes:pdf|max:2048',
+            'title'   => 'required|string|max:255',
+            'content' => 'required|string',
+            'cover'   => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
 
         if ($request->hasFile('cover')) {
-
             if ($education->cover && file_exists(public_path('cover/'.$education->cover))) {
                 unlink(public_path('cover/'.$education->cover));
             }
@@ -446,95 +434,12 @@ class AdminDashboardController extends Controller
             $education->cover = $coverName;
         }
 
-        if ($request->hasFile('file_pdf')) {
-
-            if ($education->file_pdf && file_exists(public_path('pdf/'.$education->file_pdf))) {
-                unlink(public_path('pdf/'.$education->file_pdf));
-            }
-
-            $file = $request->file('file_pdf');
-            $pdfName = time().'_pdf_'.$file->getClientOriginalName();
-            $file->move(public_path('pdf'), $pdfName);
-
-            $education->file_pdf = $pdfName;
-        }
-
-        $education->title = $request->title;
+        $education->title   = $request->title;
+        $education->content = $request->content;
         $education->save();
 
         return redirect()->route('admin.educations')
             ->with('success', 'Artikel diupdate.');
-    }
-    // ==================== ABOUT PAGE ====================
-
-    public function aboutPage()
-    {
-        $settings = AboutSetting::all()->groupBy('section')->map(function ($items) {
-            return $items->pluck('value', 'key')->toArray();
-        });
-
-        return view('admin.about', [
-            'hero'     => $settings->get('hero', []),
-            'visi'     => $settings->get('visi', []),
-            'strategi' => $settings->get('strategi', []),
-            'sejarah'  => $settings->get('sejarah', []),
-            'team'     => $settings->get('team', []),
-            'layanan'  => $settings->get('layanan', []),
-        ]);
-    }
-
-    public function updateAbout(Request $request)
-    {
-        $section = $request->input('section');
-
-        // Process text fields: collect all inputs starting with section prefix
-        $fields = collect($request->all())->filter(function ($value, $key) use ($section) {
-            return str_starts_with($key, $section . '_') && !is_null($value) && $key !== '_token' && $key !== 'section';
-        });
-
-        foreach ($fields as $inputKey => $value) {
-            // Convert "hero_badge" -> key = "badge"
-            $key = str_replace($section . '_', '', $inputKey);
-
-            // Skip file inputs (handled separately)
-            if ($request->hasFile($inputKey)) continue;
-
-            AboutSetting::updateOrCreate(
-                ['section' => $section, 'key' => $key],
-                ['value' => $value]
-            );
-        }
-
-        // Process image uploads
-        $imageDir = public_path('images/about');
-        if (!file_exists($imageDir)) {
-            mkdir($imageDir, 0755, true);
-        }
-
-        foreach ($request->allFiles() as $inputKey => $file) {
-            $key = str_replace($section . '_', '', $inputKey);
-
-            $request->validate([
-                $inputKey => 'image|mimes:jpg,jpeg,png,webp|max:2048',
-            ]);
-
-            // Delete old image if exists
-            $oldImage = AboutSetting::getImage($section, $key);
-            if ($oldImage && file_exists(public_path('images/about/' . $oldImage))) {
-                unlink(public_path('images/about/' . $oldImage));
-            }
-
-            // Save new image
-            $filename = $section . '_' . $key . '_' . time() . '.' . $file->getClientOriginalExtension();
-            $file->move($imageDir, $filename);
-
-            AboutSetting::updateOrCreate(
-                ['section' => $section, 'key' => $key],
-                ['image' => $filename]
-            );
-        }
-
-        return back()->with('success', 'Konten About section "' . ucfirst($section) . '" berhasil diperbarui.');
     }
 
     // ==================== CONTACT PAGE ====================

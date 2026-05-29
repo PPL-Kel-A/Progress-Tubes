@@ -23,7 +23,7 @@
 <body class="antialiased" style="background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 40%, #f0f9e8 100%); min-height: 100vh;">
 
     {{-- ── Back Button ── --}}
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
+    <div class="w-full px-4 sm:px-6 lg:px-8 pt-6">
         <a href="{{ route('dashboard') }}" class="inline-flex items-center gap-2 text-sm font-semibold text-green-700 hover:text-green-900 transition group">
             <svg class="w-5 h-5 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
             Kembali
@@ -31,15 +31,12 @@
     </div>
 
     {{-- ── Hero Banner ── --}}
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 mt-4 mb-8">
+    <div class="w-full px-4 sm:px-6 lg:px-8 mt-4 mb-8">
         <div class="relative overflow-hidden rounded-2xl shadow-lg" style="background: linear-gradient(135deg, #0d3b0e 0%, #1b5e20 40%, #2e7d32 70%, #388e3c 100%);">
-            {{-- Decorative leaf pattern --}}
             <div class="absolute inset-0 opacity-[.06]" style="background-image: url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'%3E%3Cpath d='M30 2C30 2 15 15 15 30C15 42 22 50 30 58C38 50 45 42 45 30C45 15 30 2 30 2Z' fill='%23ffffff'/%3E%3C/svg%3E&quot;); background-size: 60px 60px;"></div>
-            {{-- Radial glow --}}
             <div class="absolute inset-0" style="background: radial-gradient(ellipse 500px 400px at 80% 50%, rgba(76,175,80,.2) 0%, transparent 70%);"></div>
 
             <div class="relative px-8 py-10 flex flex-col sm:flex-row items-start sm:items-center gap-6">
-                {{-- Avatar --}}
                 <div class="flex-shrink-0">
                     @if(auth()->user()->profile_photo)
                         <img src="{{ asset('profile-photos/' . auth()->user()->profile_photo) }}"
@@ -53,7 +50,6 @@
                     @endif
                 </div>
 
-                {{-- Info --}}
                 <div class="flex-1 min-w-0">
                     <h1 class="text-2xl font-bold text-white truncate">
                         {{ auth()->user()->name }}
@@ -71,22 +67,21 @@
     </div>
 
     {{-- ── Form Cards ── --}}
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6 pb-12">
+    <div class="w-full px-4 sm:px-6 lg:px-8 pb-12">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
-        {{-- Profile Photo Card --}}
-        <div class="bg-white rounded-2xl shadow-sm border border-green-100/80 overflow-hidden hover:shadow-md transition-shadow duration-300">
-            <div class="px-6 py-4 border-b border-green-50 flex items-center gap-3" style="background: linear-gradient(90deg, #f0fdf4, #ffffff);">
-                <span class="flex items-center justify-center w-9 h-9 rounded-xl bg-green-100 text-green-700">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                </span>
-                <div>
-                    <h3 class="text-base font-bold text-gray-800">Foto Profil</h3>
-                    <p class="text-xs text-gray-500">Upload foto profil Anda (maks. 2MB, format: JPG, PNG, WEBP)</p>
+            {{-- Profile Photo Card --}}
+            <div class="bg-white rounded-2xl shadow-sm border border-green-100/80 overflow-hidden hover:shadow-md transition-shadow duration-300">
+                <div class="px-6 py-4 border-b border-green-50 flex items-center gap-3" style="background: linear-gradient(90deg, #f0fdf4, #ffffff);">
+                    <span class="flex items-center justify-center w-9 h-9 rounded-xl bg-green-100 text-green-700">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                    </span>
+                    <div>
+                        <h3 class="text-base font-bold text-gray-800">Foto Profil</h3>
+                        <p class="text-xs text-gray-500">Upload foto profil Anda (maks. 2MB, format: JPG, PNG, WEBP)</p>
+                    </div>
                 </div>
-            </div>
-            <div class="px-6 py-6">
-                <div class="max-w-xl">
-                    {{-- Current Photo Preview --}}
+                <div class="px-6 py-6">
                     <div class="flex items-center gap-6 mb-6">
                         <div class="flex-shrink-0">
                             @if(auth()->user()->profile_photo)
@@ -112,7 +107,6 @@
                         </div>
                     </div>
 
-                    {{-- Upload Form --}}
                     <form method="POST" action="{{ route('profile.photo.update') }}" enctype="multipart/form-data" class="space-y-4">
                         @csrf
                         <div>
@@ -134,7 +128,6 @@
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
                                 Upload Foto
                             </button>
-
                             @if (session('status') === 'photo-updated')
                                 <p x-data="{ show: true }" x-show="show" x-transition.opacity.duration.500ms x-init="setTimeout(() => show = false, 3000)"
                                    class="text-sm font-medium text-green-700 bg-green-50 px-3 py-1.5 rounded-lg">✅ Foto diperbarui!</p>
@@ -142,7 +135,6 @@
                         </div>
                     </form>
 
-                    {{-- Delete Photo --}}
                     @if(auth()->user()->profile_photo)
                         <div class="mt-4 pt-4 border-t border-gray-100">
                             <form method="POST" action="{{ route('profile.photo.delete') }}" onsubmit="return confirm('Yakin ingin menghapus foto profil?')">
@@ -153,7 +145,6 @@
                                     Hapus Foto Profil
                                 </button>
                             </form>
-
                             @if (session('status') === 'photo-deleted')
                                 <p x-data="{ show: true }" x-show="show" x-transition.opacity.duration.500ms x-init="setTimeout(() => show = false, 3000)"
                                    class="text-sm font-medium text-red-600 bg-red-50 px-3 py-1.5 rounded-lg mt-2">🗑️ Foto dihapus!</p>
@@ -162,80 +153,70 @@
                     @endif
                 </div>
             </div>
-        </div>
 
-        {{-- Profile Information Card --}}
-        <div class="bg-white rounded-2xl shadow-sm border border-green-100/80 overflow-hidden hover:shadow-md transition-shadow duration-300">
-            <div class="px-6 py-4 border-b border-green-50 flex items-center gap-3" style="background: linear-gradient(90deg, #f0fdf4, #ffffff);">
-                <span class="flex items-center justify-center w-9 h-9 rounded-xl bg-green-100 text-green-700">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
-                </span>
-                <div>
-                    <h3 class="text-base font-bold text-gray-800">Informasi Profil</h3>
-                    <p class="text-xs text-gray-500">Perbarui nama dan alamat email akun Anda</p>
+            {{-- Profile Information Card --}}
+            <div class="bg-white rounded-2xl shadow-sm border border-green-100/80 overflow-hidden hover:shadow-md transition-shadow duration-300">
+                <div class="px-6 py-4 border-b border-green-50 flex items-center gap-3" style="background: linear-gradient(90deg, #f0fdf4, #ffffff);">
+                    <span class="flex items-center justify-center w-9 h-9 rounded-xl bg-green-100 text-green-700">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                    </span>
+                    <div>
+                        <h3 class="text-base font-bold text-gray-800">Informasi Profil</h3>
+                        <p class="text-xs text-gray-500">Perbarui nama dan alamat email akun Anda</p>
+                    </div>
                 </div>
-            </div>
-            <div class="px-6 py-6">
-                <div class="max-w-xl">
+                <div class="px-6 py-6">
                     @include('profile.partials.update-profile-information-form')
                 </div>
             </div>
-        </div>
 
-        {{-- Password Card --}}
-        <div class="bg-white rounded-2xl shadow-sm border border-emerald-100/80 overflow-hidden hover:shadow-md transition-shadow duration-300">
-            <div class="px-6 py-4 border-b border-emerald-50 flex items-center gap-3" style="background: linear-gradient(90deg, #ecfdf5, #ffffff);">
-                <span class="flex items-center justify-center w-9 h-9 rounded-xl bg-emerald-100 text-emerald-700">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
-                </span>
-                <div>
-                    <h3 class="text-base font-bold text-gray-800">Keamanan Akun</h3>
-                    <p class="text-xs text-gray-500">Gunakan kata sandi yang kuat untuk melindungi akun Anda</p>
+            {{-- Password Card --}}
+            <div class="bg-white rounded-2xl shadow-sm border border-emerald-100/80 overflow-hidden hover:shadow-md transition-shadow duration-300">
+                <div class="px-6 py-4 border-b border-emerald-50 flex items-center gap-3" style="background: linear-gradient(90deg, #ecfdf5, #ffffff);">
+                    <span class="flex items-center justify-center w-9 h-9 rounded-xl bg-emerald-100 text-emerald-700">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                    </span>
+                    <div>
+                        <h3 class="text-base font-bold text-gray-800">Keamanan Akun</h3>
+                        <p class="text-xs text-gray-500">Gunakan kata sandi yang kuat untuk melindungi akun Anda</p>
+                    </div>
                 </div>
-            </div>
-            <div class="px-6 py-6">
-                <div class="max-w-xl">
+                <div class="px-6 py-6">
                     @include('profile.partials.update-password-form')
                 </div>
             </div>
-        </div>
 
-        {{-- Delete Account Card --}}
-        <div class="bg-white rounded-2xl shadow-sm border border-red-100/80 overflow-hidden hover:shadow-md transition-shadow duration-300">
-            <div class="px-6 py-4 border-b border-red-50 flex items-center gap-3" style="background: linear-gradient(90deg, #fef2f2, #ffffff);">
-                <span class="flex items-center justify-center w-9 h-9 rounded-xl bg-red-100 text-red-600">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4.5c-.77-.833-2.694-.833-3.464 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z"/></svg>
-                </span>
-                <div>
-                    <h3 class="text-base font-bold text-gray-800">Zona Bahaya</h3>
-                    <p class="text-xs text-gray-500">Tindakan ini bersifat permanen dan tidak dapat dibatalkan</p>
+            {{-- Delete Account Card --}}
+            <div class="bg-white rounded-2xl shadow-sm border border-red-100/80 overflow-hidden hover:shadow-md transition-shadow duration-300">
+                <div class="px-6 py-4 border-b border-red-50 flex items-center gap-3" style="background: linear-gradient(90deg, #fef2f2, #ffffff);">
+                    <span class="flex items-center justify-center w-9 h-9 rounded-xl bg-red-100 text-red-600">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4.5c-.77-.833-2.694-.833-3.464 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z"/></svg>
+                    </span>
+                    <div>
+                        <h3 class="text-base font-bold text-gray-800">Zona Bahaya</h3>
+                        <p class="text-xs text-gray-500">Tindakan ini bersifat permanen dan tidak dapat dibatalkan</p>
+                    </div>
                 </div>
-            </div>
-            <div class="px-6 py-6">
-                <div class="max-w-xl">
+                <div class="px-6 py-6">
                     @include('profile.partials.delete-user-form')
                 </div>
             </div>
-        </div>
 
+        </div>
     </div>
 
     <script>
         function previewPhoto(input) {
             const file = input.files[0];
             if (!file) return;
-
-            // Client-side 2MB check
             if (file.size > 2 * 1024 * 1024) {
                 alert('Ukuran foto maksimal 2MB. File yang dipilih: ' + (file.size / 1024 / 1024).toFixed(1) + 'MB');
                 input.value = '';
                 return;
             }
-
             const preview = document.getElementById('photoPreview');
             const reader = new FileReader();
             reader.onload = function(e) {
-                // Replace initials div with img if needed
                 if (preview.tagName !== 'IMG') {
                     const img = document.createElement('img');
                     img.id = 'photoPreview';

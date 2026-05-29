@@ -16,13 +16,14 @@
 
             @forelse($educations as $edu)
 
-                <div class="bg-white rounded-2xl border border-green-100 
-                            shadow-sm hover:shadow-xl hover:-translate-y-1 
-                            transition duration-300 overflow-hidden">
+                <a href="{{ route('education.show', $edu) }}"
+                   class="bg-white rounded-2xl border border-green-100 
+                          shadow-sm hover:shadow-xl hover:-translate-y-1 
+                          transition duration-300 overflow-hidden block">
 
-                    <!-- COVER (FIX UKURAN) -->
+                    <!-- COVER -->
                     @if($edu->cover)
-                        <div class="w-full h-40 bg-green-50 flex items-center justify-center overflow-hidden">
+                        <div class="w-full h-40 bg-green-50 overflow-hidden">
                             <img src="{{ asset('cover/' . $edu->cover) }}"
                                  class="w-full h-full object-cover">
                         </div>
@@ -46,21 +47,16 @@
                         </p>
 
                         <!-- BUTTON -->
-                        @if($edu->file_pdf)
-                            <a href="{{ asset('pdf/' . $edu->file_pdf) }}"
-                               target="_blank"
-                               class="w-full inline-flex items-center justify-center gap-2 text-sm font-semibold 
-                                      bg-green-600 text-white px-4 py-2 rounded-lg 
-                                      shadow-md hover:bg-green-700 hover:shadow-lg 
-                                      active:scale-95 transition duration-200">
-
-                                📄 Baca Artikel
-                            </a>
-                        @endif
+                        <span class="w-full inline-flex items-center justify-center gap-2 text-sm font-semibold 
+                                     bg-green-600 text-white px-4 py-2 rounded-lg 
+                                     shadow-md hover:bg-green-700 hover:shadow-lg 
+                                     active:scale-95 transition duration-200">
+                            📄 Baca Artikel
+                        </span>
 
                     </div>
 
-                </div>
+                </a>
 
             @empty
 
@@ -83,6 +79,7 @@
         <div class="mt-12">
             {{ $educations->links() }}
         </div>
+
         @include('partials.footer')
     </div>
 </x-app-layout>
