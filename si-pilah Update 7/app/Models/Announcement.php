@@ -10,13 +10,16 @@ class Announcement extends Model
         'user_id',
         'judul',
         'konten',
+        'kategori', // <-- Menambahkan field kategori sesuai permintaan
         'start_at',
         'end_at',
+        'read_at',
     ];
 
     protected $casts = [
         'start_at' => 'datetime',
         'end_at' => 'datetime',
+        'read_at' => 'datetime',
     ];
 
     public function getStatusAttribute(): string

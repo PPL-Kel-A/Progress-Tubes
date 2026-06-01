@@ -76,81 +76,121 @@
             </div>
         </div>
 
-        <div class="flex items-center justify-between mb-6">
-            <h2 class="text-xl font-bold text-gray-700">Riwayat Setoran Terakhir</h2>
-            <a href="{{ route('waste.select') }}" class="text-sm font-semibold text-sipilah-green hover:underline">+ Setor Baru</a>
-        </div>
-        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden mb-10">
-            @if($riwayatSampah->count() > 0)
-                <div class="overflow-x-auto">
-                    <table class="w-full text-sm">
-                        <thead class="bg-gray-50 text-gray-500 text-xs uppercase">
-                            <tr>
-                                <th class="px-5 py-3 text-left">Tipe</th>
-                                <th class="px-5 py-3 text-left">Kategori</th>
-                                <th class="px-5 py-3 text-left">Berat</th>
-                                <th class="px-5 py-3 text-left">Hasil (L)</th>
-                                <th class="px-5 py-3 text-left">TPS</th>
-                                <th class="px-5 py-3 text-left">Tanggal</th>
-                                <th class="px-5 py-3 text-left">Status</th>
-                                <th class="px-5 py-3 text-center">Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-gray-50">
-                            @foreach($riwayatSampah as $waste)
-                            <tr class="hover:bg-gray-50/50">
-                                <td class="px-5 py-3">
-                                    <span class="px-2 py-1 rounded-full text-xs font-bold {{ $waste->type === 'organic' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700' }}">
-                                        {{ ucfirst($waste->type) }}
+    <div class="flex justify-between items-center mb-4">
+        <h2 id="riwayat-setoran" class="text-xl font-bold text-gray-700">Riwayat Setoran Terakhir</h2>
+    <a href="{{ route('waste.select') }}" class="text-sm font-semibold text-sipilah-green hover:underline">+ Setor Baru</a>
+</div>
+<div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden mb-10">
+    @if($riwayatSampah->count() > 0)
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+                <thead class="bg-gray-50 text-gray-500 text-xs uppercase">
+                    <tr>
+                        <th class="px-5 py-3 text-left">Tipe</th>
+                        <th class="px-5 py-3 text-left">Kategori</th>
+                        <th class="px-5 py-3 text-left">Berat</th>
+                        <th class="px-5 py-3 text-left">Hasil (L)</th>
+                        <th class="px-5 py-3 text-left">Poin</th> {{-- Kolom Poin --}}
+                        <th class="px-5 py-3 text-left">TPS</th>
+                        <th class="px-5 py-3 text-left">Tanggal</th>
+                        <th class="px-5 py-3 text-left">Status</th>
+                        <th class="px-5 py-3 text-center">Aksi</th> {{-- Kolom Aksi --}}
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-50">
+                    @foreach($riwayatSampah as $waste)
+                    <tr class="hover:bg-gray-50/50">
+                        <td class="px-5 py-3">
+                            <span class="px-2 py-1 rounded-full text-xs font-bold {{ $waste->type === 'organic' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700' }}">
+                                {{ ucfirst($waste->type) }}
+                            </span>
+                        </td>
+                        <td class="px-5 py-3 text-gray-700">{{ $waste->category }}</td>
+                        <td class="px-5 py-3 font-semibold text-gray-800">{{ number_format($waste->weight, 2) }} Kg</td>
+                        <td class="px-5 py-3 text-gray-600">{{ number_format($waste->result, 2) }}</td>
+                        
+                        {{-- ====================================================== --}}
+                        {{-- KOLOM POIN: BERUBAH JADI TOMBOL KLAIM JIKA BELUM DIKLAIM --}}
+                        {{-- ====================================================== --}}
+                        <td class="px-5 py-3 font-bold">
+                            @if(($waste->status ?? 'Pending') === 'Selesai')
+                                @if(!($waste->is_claimed ?? false))
+                                    
+                                    {{-- PERBAIKAN: Ganti <a> dengan <form> agar bisa POST --}}
+                                    <form action="{{ route('waste.claim', $waste->id) }}" method="POST" class="inline-block">
+                                        @csrf
+                                        <button type="submit" class="text-xs bg-blue-600 text-white px-2.5 py-1.5 rounded-lg font-bold hover:bg-blue-700 transition whitespace-nowrap shadow-sm animate-pulse cursor-pointer">
+                                            💰 Klaim Poin
+                                        </button>
+                                    </form>
+
+                                @else
+                                    {{-- Jika SUDAH diklaim --}}
+                                    <span class="inline-flex flex-col items-start gap-0.5">
+                                        <span class="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-bold whitespace-nowrap">✅ Poin Sudah Diklaim</span>
+                                        <span class="text-green-600 text-xs">+{{ number_format($waste->points_earned ?? ($waste->result * 10)) }} Poin</span>
                                     </span>
-                                </td>
-                                <td class="px-5 py-3 text-gray-700">{{ $waste->category }}</td>
-                                <td class="px-5 py-3 font-semibold text-gray-800">{{ number_format($waste->weight, 2) }} Kg</td>
-                                <td class="px-5 py-3 text-gray-600">{{ number_format($waste->result, 2) }}</td>
-                                <td class="px-5 py-3 text-gray-500 text-xs max-w-[150px] truncate" title="{{ $waste->tps }}">{{ $waste->tps }}</td>
-                                <td class="px-5 py-3 text-gray-400 text-xs">{{ $waste->created_at->format('d/m/Y H:i') }}</td>
-                                <td class="px-5 py-3">
-                                    @php
-                                        $statusColors = [
-                                            'Pending'    => 'bg-yellow-100 text-yellow-700',
-                                            'Diproses'   => 'bg-blue-100 text-blue-700',
-                                            'Selesai'    => 'bg-green-100 text-green-700',
-                                            'Dibatalkan' => 'bg-red-100 text-red-700',
-                                        ];
-                                        $color = $statusColors[$waste->status] ?? 'bg-gray-100 text-gray-600';
-                                    @endphp
-                                    <span class="px-2.5 py-1 rounded-full text-xs font-bold {{ $color }}">
-                                        {{ $waste->status ?? 'Pending' }}
-                                    </span>
-                                </td>
-                                <td class="px-5 py-3 text-center">
-                                    @if(($waste->status ?? 'Pending') === 'Selesai')
-                                        @php
-                                            $hasReviewed = \App\Models\Review::where('waste_id', $waste->id)->exists();
-                                        @endphp
-                                        @if(!$hasReviewed)
-                                            <button @click="showFeedback = true; feedbackWasteId = {{ $waste->id }}; rating = 0;" class="text-xs bg-green-50 text-green-600 px-3 py-1.5 rounded-lg font-semibold hover:bg-green-100 transition whitespace-nowrap">
-                                                Beri Ulasan
-                                            </button>
-                                        @else
-                                            <span class="text-xs text-gray-400 whitespace-nowrap">Sudah Diulas</span>
-                                        @endif
-                                    @else
-                                        <span class="text-xs text-gray-400">-</span>
-                                    @endif
-                                </td>
-                            </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-            @else
-                <div class="py-10 text-center">
-                    <div class="text-4xl mb-3">🗑️</div>
-                    <p class="text-gray-400 font-medium text-sm">Belum ada setoran sampah. <a href="{{ route('waste.select') }}" class="text-sipilah-green font-bold hover:underline">Mulai setor →</a></p>
-                </div>
-            @endif
+                                @endif
+                            @else
+                                <span class="text-gray-400 italic text-xs">Pending</span>
+                            @endif
+                        </td>
+                        {{-- ====================================================== --}}
+
+                        <td class="px-5 py-3 text-gray-500 text-xs max-w-[150px] truncate" title="{{ $waste->tps }}">{{ $waste->tps }}</td>
+                        <td class="px-5 py-3 text-gray-400 text-xs">{{ $waste->created_at->format('d/m/Y H:i') }}</td>
+                        
+                        {{-- Kolom Status --}}
+                        <td class="px-5 py-3">
+                            @php
+                                $statusColors = [
+                                    'Pending'    => 'bg-yellow-100 text-yellow-700',
+                                    'Diproses'   => 'bg-blue-100 text-blue-700',
+                                    'Selesai'    => 'bg-green-100 text-green-700',
+                                    'Dibatalkan' => 'bg-red-100 text-red-700',
+                                ];
+                                $color = $statusColors[$waste->status] ?? 'bg-gray-100 text-gray-600';
+                            @endphp
+                            <span class="px-2.5 py-1 rounded-full text-xs font-bold {{ $color }}">
+                                {{ $waste->status ?? 'Pending' }}
+                            </span>
+                        </td>
+
+                        {{-- ====================================================== --}}
+                        {{-- KOLOM AKSI: TETAP UNTUK TOMBOL BERI ULASAN --}}
+                        {{-- ====================================================== --}}
+                        <td class="px-5 py-3 text-center">
+                            @if(($waste->status ?? 'Pending') === 'Selesai')
+                                @php
+                                    $hasReviewed = \App\Models\Review::where('waste_id', $waste->id)->exists();
+                                @endphp
+
+                                @if(!$hasReviewed)
+                                    {{-- Tombol Beri Ulasan tetap aman di sini dan tidak hilang/terganti --}}
+                                    <button @click="showFeedback = true; feedbackWasteId = {{ $waste->id }}; rating = 0;" class="text-xs bg-green-50 text-green-600 px-3 py-1.5 rounded-lg font-semibold hover:bg-green-100 transition whitespace-nowrap">
+                                        Beri Ulasan
+                                    </button>
+                                @else
+                                    <span class="text-xs text-gray-400 whitespace-nowrap bg-gray-100 px-2 py-1 rounded-md">✓ Sudah Diulas</span>
+                                @endif
+                            @else
+                                <span class="text-xs text-gray-400">-</span>
+                            @endif
+                        </td>
+                        {{-- ====================================================== --}}
+
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
         </div>
+    @else
+        <div class="py-10 text-center">
+            <div class="text-4xl mb-3">🗑️</div>
+            <p class="text-gray-400 font-medium text-sm">Belum ada setoran sampah. <a href="{{ route('waste.select') }}" class="text-sipilah-green font-bold hover:underline">Mulai setor →</a></p>
+        </div>
+    @endif
+</div>
 
         {{-- ── Jadwal Penjemputan & TPS Terdekat ── --}}
         <div class="flex items-center justify-between mb-4">

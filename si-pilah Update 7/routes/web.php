@@ -60,8 +60,13 @@ Route::middleware('auth')->group(function () {
     Route::get('/waste/form', [WasteController::class, 'create']);
     Route::post('/waste/preview', [WasteController::class, 'preview']);
     Route::post('/waste/store', [WasteController::class, 'store']);
-    Route::get('/waste/success', [WasteController::class, 'success']);
 
+    // Halaman sukses setelah submit (menggunakan ID agar data bisa dipanggil kembali)
+    Route::get('/waste/success/{id}', [WasteController::class, 'showSuccess'])->name('waste.showSuccess');
+    
+    // Route Klaim Poin (WAJIB POST agar aman dan tidak bentrok dengan GET)
+    Route::post('/waste/claim-point/{id}', [WasteController::class, 'claimPoint'])->name('waste.claim');
+    
     // Guidelines
     Route::get('/waste/guidelines', fn () => view('waste.guidelines'))->name('waste.guidelines');
     Route::get('/process-flow', fn () => view('waste.process-flow'))->name('process.flow');

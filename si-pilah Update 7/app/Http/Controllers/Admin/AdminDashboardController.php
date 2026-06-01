@@ -108,12 +108,53 @@ class AdminDashboardController extends Controller
         }
 
         if ($request->filled('status')) {
-            $query->where('status', $request->status);
-        }
+    $query->where('status', $request->status);
+}
 
-        $wastes = $query->paginate(15)->withQueryString();
-        return view('admin.wastes', compact('wastes'));
-    }
+    $wastes = $query->paginate(15)->withQueryString();
+
+
+    $organicCount = Waste::where('type', 'organic')->count();
+    $organicWeight = Waste::where('type', 'organic')->sum('weight');
+
+    $inorganicCount = Waste::where('type', 'inorganic')->count();
+    $inorganicWeight = Waste::where('type', 'inorganic')->sum('weight');
+
+    $completedCount = Waste::where('status', 'Selesai')->count();
+
+    $totalWaste = Waste::count();
+
+    $completionRate = $totalWaste > 0
+        ? round(($completedCount / $totalWaste) * 100)
+        : 0;
+
+    return view('admin.wastes', compact(
+        'wastes',
+        'organicCount',
+        'organicWeight',
+        'inorganicCount',
+        'inorganicWeight',
+        'completedCount',
+        'completionRate'
+    ));
+            $request->validate([
+                'status' => 'required|in:Pending,Diproses,Selesai,Dibatalkan',
+            ]);
+
+            $waste->update([
+                'status' => $request->status
+            ]);
+
+            // Reward otomatis saat selesai
+            if ($request->status === 'Selesai') {
+
+                $rewardService = new RewardPointService();
+
+                $rewardService->awardPointsForCompletedWaste($waste);
+            }
+
+            return back()->with('success', 'Status sampah diperbarui.');
+        }
 
     public function updateWasteStatus(Request $request, Waste $waste)
     {
@@ -125,26 +166,19 @@ class AdminDashboardController extends Controller
             'status' => $request->status
         ]);
 
-        // Reward otomatis saat selesai
         if ($request->status === 'Selesai') {
 
-            $rewardService = new RewardPointService();
-
-            $rewardService->awardPointsForCompletedWaste($waste);
+            Announcement::create([
+                'user_id' => auth()->id(),
+                'judul' => 'Pengolahan Sampah Selesai',
+                'konten' => 'Sampah "' . $waste->name . '" berhasil diproses dan telah selesai dikelola.',
+                'start_at' => now(),
+                'end_at' => now()->addDays(30),
+            ]);
         }
 
         return back()->with('success', 'Status sampah diperbarui.');
     }
-
-    // public function updateWasteStatus(Request $request, Waste $waste)
-    // {
-    //     $request->validate([
-    //         'status' => 'required|in:Pending,Diproses,Selesai,Dibatalkan',
-    //     ]);
-
-    //     $waste->update(['status' => $request->status]);
-    //     return back()->with('success', 'Status sampah diperbarui.');
-    // }
 
     public function deleteWaste(Waste $waste)
     {
@@ -389,10 +423,19 @@ class AdminDashboardController extends Controller
             $cover->move(public_path('cover'), $coverName);
         }
 
-        Education::create([
+        $education = Education::create([
             'title'   => $request->title,
             'content' => $request->content,
             'cover'   => $coverName,
+        ]);
+
+        // Buat notifikasi otomatis kategori "Kegiatan"
+        Announcement::create([
+            'user_id'  => auth()->id(),
+            'judul'    => 'Kegiatan Edukasi Baru: ' . $education->title,
+            'konten'   => 'Terdapat materi edukasi baru: "' . $education->title . '". Yuk baca sekarang!',
+            'start_at' => now(),
+            'end_at'   => now()->addYears(2),
         ]);
 
         return back()->with('success', 'Artikel ditambahkan.');

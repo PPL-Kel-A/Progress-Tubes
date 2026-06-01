@@ -18,7 +18,7 @@
                      :class="{ 'block': open, 'hidden': !open }">
                     <a href="#" class="block px-4 py-2 hover:bg-green-100">Report</a>
                     <a href="#" class="block px-4 py-2 hover:bg-green-100">Tracking</a>
-                    <a href="#" class="block px-4 py-2 hover:bg-green-100">History</a>
+                    <a href="/dashboard#riwayat-setoran" class="block px-4 py-2 hover:bg-green-100">History</a>
                     <a href="{{ route('waste.guidelines') }}" class="block px-4 py-2 hover:bg-green-100">Guidelines & Rules</a>
                 </div>
             </div>
@@ -50,7 +50,7 @@
                 @php
                     $unreadCount = \App\Models\Announcement::where(function($q) {
                         $q->whereNull('user_id')->orWhere('user_id', auth()->id());
-                    })->where('created_at', '>=', now()->subDays(3))->count();
+                    })->whereNull('read_at')->count();
                 @endphp
                 <a href="{{ route('announcements.index') }}" class="relative p-2 rounded-xl hover:bg-green-50 transition group" title="Pengumuman">
                     <svg class="w-5 h-5 text-gray-500 group-hover:text-green-700 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>

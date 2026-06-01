@@ -184,6 +184,15 @@ class DashboardController extends Controller
     public function announcements()
     {
         $userId = Auth::id();
+
+        // Tandai semua notifikasi user yang belum dibaca sebagai sudah dibaca
+        Announcement::where(function($q) use ($userId) {
+                        $q->whereNull('user_id')
+                          ->orWhere('user_id', $userId);
+                    })
+                    ->whereNull('read_at')
+                    ->update(['read_at' => now()]);
+
         $announcements = Announcement::where(function($q) use ($userId) {
                                          $q->whereNull('user_id')
                                            ->orWhere('user_id', $userId);

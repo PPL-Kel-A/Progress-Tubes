@@ -92,7 +92,7 @@
         </div>
     </div>
 
-    @if($reviews->count() > 0)
+    @if(count($reviews) > 0)
     <div id="feedback" class="bg-green-50 py-16 border-t border-green-100">
         <div class="container mx-auto px-6">
             <div class="text-center mb-12">
