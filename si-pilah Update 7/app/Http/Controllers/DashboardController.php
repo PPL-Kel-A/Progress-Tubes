@@ -166,6 +166,15 @@ class DashboardController extends Controller
         // Riwayat setoran sampah user (5 terbaru)
         $riwayatSampah = Waste::where('user_id', $userId)->latest()->take(5)->get();
 
+        // Tambahkan atribut is_claimed dan points_earned untuk setiap waste
+        foreach ($riwayatSampah as $waste) {
+            $rewardRecord = Reward::where('user_id', $userId)
+                                  ->where('description', 'like', '%[ID: ' . $waste->id . ']%')
+                                  ->first();
+            $waste->is_claimed = $rewardRecord ? true : false;
+            $waste->points_earned = $rewardRecord ? $rewardRecord->points : 0;
+        }
+
         // Jadwal penjemputan mendatang — filter berdasarkan kelurahan user
         $jadwalMendatangQuery = Schedule::where('waktu_jemput', '>=', now())
                                         ->orderBy('waktu_jemput', 'asc');
