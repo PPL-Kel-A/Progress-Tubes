@@ -92,6 +92,12 @@ class WasteController extends Controller
         $submission = Waste::findOrFail($id);
 
         if (strtolower($submission->status) !== 'selesai') {
+            if (request()->wantsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Status pengajuan belum selesai.'
+                ], 400);
+            }
             return redirect()->back()->with('error', 'Status pengajuan belum selesai.');
         }
 
@@ -100,6 +106,12 @@ class WasteController extends Controller
                             ->exists();
 
         if ($sudahKlaim) {
+            if (request()->wantsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Poin untuk pengajuan ini sudah diklaim.'
+                ], 400);
+            }
             return redirect()->back()->with('error', 'Poin untuk pengajuan ini sudah diklaim.');
         }
 
@@ -115,6 +127,15 @@ class WasteController extends Controller
             'points' => $poinDihasilkan,
             'description' => "Klaim poin hasil konversi " . number_format($submission->result, 2) . " L [ID: {$id}]",
         ]);
+
+        $submission->update(['is_rewarded' => true]);
+
+        if (request()->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Berhasil! Anda mendapatkan ' . $poinDihasilkan . ' Poin.'
+            ]);
+        }
 
         // PERUBAHAN DI SINI: Mengarahkan ke halaman success bukan ke dashboard
         return redirect()->route('waste.showSuccess', ['id' => $id])
