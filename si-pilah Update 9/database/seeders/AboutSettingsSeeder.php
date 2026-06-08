@@ -40,19 +40,19 @@ class AboutSettingsSeeder extends Seeder
 
             // === TEAM ===
             ['section' => 'team', 'key' => 'description', 'value' => 'Kami adalah tim yang berdedikasi tinggi dalam menciptakan solusi inovatif untuk pengelolaan sampah yang berkelanjutan di Indonesia.', 'order' => 0],
-            ['section' => 'team', 'key' => 'member_1_name', 'value' => 'Muhammad Fauzan', 'order' => 1],
+            ['section' => 'team', 'key' => 'member_1_name', 'value' => 'Muhammad Ifandy', 'order' => 1],
             ['section' => 'team', 'key' => 'member_1_role', 'value' => 'Chief Executive Officer', 'order' => 2],
-            ['section' => 'team', 'key' => 'member_2_name', 'value' => 'Sari Ratna Ramadhani', 'order' => 3],
+            ['section' => 'team', 'key' => 'member_2_name', 'value' => 'Levi Raica Kamaliyah', 'order' => 3],
             ['section' => 'team', 'key' => 'member_2_role', 'value' => 'Chief Operating Officer', 'order' => 4],
             ['section' => 'team', 'key' => 'member_3_name', 'value' => 'Rizky Sandi Pratama', 'order' => 5],
             ['section' => 'team', 'key' => 'member_3_role', 'value' => 'Chief Technology Officer', 'order' => 6],
-            ['section' => 'team', 'key' => 'member_4_name', 'value' => 'Anneta Kusnawati Ramadhani', 'order' => 7],
+            ['section' => 'team', 'key' => 'member_4_name', 'value' => 'Saskia Khoirudzaki', 'order' => 7],
             ['section' => 'team', 'key' => 'member_4_role', 'value' => 'Chief Marketing Officer', 'order' => 8],
-            ['section' => 'team', 'key' => 'member_5_name', 'value' => 'Revita Dharma Ali', 'order' => 9],
+            ['section' => 'team', 'key' => 'member_5_name', 'value' => 'Muhammad Jordan', 'order' => 9],
             ['section' => 'team', 'key' => 'member_5_role', 'value' => 'Head of Operations', 'order' => 10],
-            ['section' => 'team', 'key' => 'member_6_name', 'value' => 'Muhammad Ardian', 'order' => 11],
+            ['section' => 'team', 'key' => 'member_6_name', 'value' => 'Lujeng LuthFiyah', 'order' => 11],
             ['section' => 'team', 'key' => 'member_6_role', 'value' => 'Lead Developer', 'order' => 12],
-            ['section' => 'team', 'key' => 'member_7_name', 'value' => 'Satriyo Sakti Prabudi', 'order' => 13],
+            ['section' => 'team', 'key' => 'member_7_name', 'value' => 'Anarta Abimanyu Kurniawan', 'order' => 13],
             ['section' => 'team', 'key' => 'member_7_role', 'value' => 'UI/UX Designer', 'order' => 14],
 
             // === LAYANAN ===
