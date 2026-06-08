@@ -179,23 +179,35 @@ class AdminDashboardController extends Controller
 
     public function storeReportFeedback(Request $request, Report $report)
     {
+        // Require photo when creating new feedback; allow nullable when updating existing feedback
+        $photoRule = $report->feedback ? 'nullable|image|mimes:jpg,jpeg,png|max:2048' : 'required|image|mimes:jpg,jpeg,png|max:2048';
+
         $request->validate([
             'description' => 'required|string',
-            'photo'       => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'photo'       => $photoRule,
         ]);
 
         $feedbackService = new FeedbackService();
 
+        // Prepare data explicitly so file uploads are handled correctly
+        $data = [
+            'description' => $request->input('description'),
+        ];
+
+        if ($request->hasFile('photo')) {
+            $data['photo'] = $request->file('photo');
+        }
+
         // Check if feedback already exists
         if ($report->feedback) {
             // Update existing feedback
-            $feedbackService->updateFeedback($report->feedback, $request->only('description', 'photo'));
+            $feedbackService->updateFeedback($report->feedback, $data);
             $message = '✅ Feedback laporan berhasil diperbarui!';
         } else {
             // Create new feedback
             $feedbackService->createFeedback(
                 $report,
-                $request->only('description', 'photo'),
+                $data,
                 Auth::id()
             );
             $message = '✅ Feedback laporan berhasil ditambahkan!';

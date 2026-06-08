@@ -20,6 +20,12 @@
                 <span>📝 Deskripsi Hasil Penanganan</span>
                 <span class="text-red-500">*</span>
             </span>
+                    <!-- Client-side error box (used instead of alert popups) -->
+                    <div id="clientErrorBox" class="hidden bg-red-50 border-l-4 border-red-500 text-red-700 px-4 py-4 rounded mb-4">
+                        <p class="font-bold mb-2">⚠️ Terdapat kesalahan:</p>
+                        <ul id="clientErrorList" class="list-disc list-inside space-y-1 text-sm"></ul>
+                    </div>
+
         </label>
         <textarea name="description" 
                   rows="7" 
@@ -37,7 +43,11 @@
         <label class="block text-sm font-semibold text-gray-700 mb-3">
             <span class="flex items-center gap-2">
                 <span>📸 Foto Hasil Penanganan</span>
-                <span class="text-gray-400 text-xs font-normal">(Opsional)</span>
+                @if(isset($feedback) && $feedback->photo)
+                    <span class="text-gray-400 text-xs font-normal">(Opsional)</span>
+                @else
+                    <span class="text-red-500 text-xs font-semibold">(Wajib)</span>
+                @endif
             </span>
         </label>
         
@@ -190,7 +200,13 @@
     // Form submission validation
     feedbackForm.addEventListener('submit', (e) => {
         const file = photoInput.files[0];
-        
+        // If creating new feedback (no existing photo preview), require a photo file
+        if (!document.getElementById('oldPhotoPreview') && !photoInput.files[0]) {
+            e.preventDefault();
+            alert('❌ Foto hasil penanganan wajib diunggah.');
+            return;
+        }
+
         if (file && file.size > MAX_FILE_SIZE) {
             e.preventDefault();
             alert(`❌ Ukuran foto maksimal 2 MB. File Anda: ${(file.size / 1024 / 1024).toFixed(2)} MB`);
