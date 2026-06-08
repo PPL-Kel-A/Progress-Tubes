@@ -485,6 +485,66 @@ class AdminDashboardController extends Controller
             ->with('success', 'Artikel diupdate.');
     }
 
+    // ==================== ABOUT PAGE ====================
+
+    public function aboutPage()
+    {
+        $settings = AboutSetting::all()->groupBy('section')->map(function ($items) {
+            return $items->pluck('value', 'key')->toArray();
+        });
+
+        return view('admin.about', [
+            'hero'     => $settings->get('hero', []),
+            'visi'     => $settings->get('visi', []),
+            'strategi' => $settings->get('strategi', []),
+            'sejarah'  => $settings->get('sejarah', []),
+            'team'     => $settings->get('team', []),
+            'layanan'  => $settings->get('layanan', []),
+        ]);
+    }
+
+    public function updateAbout(Request $request)
+    {
+        $section = $request->input('section');
+
+        // Process text fields
+        $fields = collect($request->all())->filter(function ($value, $key) use ($section, $request) {
+            return str_starts_with($key, $section . '_') && !is_null($value) && $key !== '_token' && $key !== 'section' && !$request->hasFile($key);
+        });
+
+        foreach ($fields as $inputKey => $value) {
+            $key = str_replace($section . '_', '', $inputKey);
+
+            AboutSetting::updateOrCreate(
+                ['section' => $section, 'key' => $key],
+                ['value' => $value]
+            );
+        }
+
+        // Process file uploads
+        $fileKeys = collect($request->allFiles())->keys()->filter(function ($key) use ($section) {
+            return str_starts_with($key, $section . '_');
+        });
+
+        foreach ($fileKeys as $inputKey) {
+            if ($request->hasFile($inputKey)) {
+                $file = $request->file($inputKey);
+                $key = str_replace($section . '_', '', $inputKey);
+                
+                // Save the file
+                $fileName = time() . '_' . $key . '_' . $file->getClientOriginalName();
+                $file->move(public_path('images/about'), $fileName);
+
+                AboutSetting::updateOrCreate(
+                    ['section' => $section, 'key' => $key],
+                    ['image' => $fileName]
+                );
+            }
+        }
+
+        return back()->with('success', 'Konten About section "' . ucfirst($section) . '" berhasil diperbarui.');
+    }
+
     // ==================== CONTACT PAGE ====================
 
     public function contactPage()
